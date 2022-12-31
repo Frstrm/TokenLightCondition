@@ -4,7 +4,19 @@ export class Lighting {
 
   static lightTable = {'dark':'DRK', 'dim':'DIM', 'bright':'BRT'};
 
-  static async show_lightLevel_box(selected_token, tokenHUD,html) {
+  static setDarknessThreshold(darknessLevel) {
+    if (darknessLevel >= 0 && darknessLevel < 0.5) {
+      return 'bright';
+    }
+    if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
+      return 'dim';
+    }
+    if (darknessLevel >= 0.75 && darknessLevel <= 1) {
+      return 'dark';
+    }
+  }
+
+  static async show_lightLevel_box(selected_token, tokenHUD, html) {
     // Determine lightLevel of the token (dark,dim,light)
     let flagText = await Lighting.find_token_lighting(selected_token);
     let boxString = Lighting.lightTable[flagText];
@@ -17,15 +29,24 @@ export class Lighting {
   }
 
   static async check_token_lighting(placed_token) {
-    let lightLevel = await Lighting.find_token_lighting(placed_token);
+    let actorCheck = Core.isValidActor(placed_token);
+    if (actorCheck) {
+      if (placed_token.actor.system.attributes.hp.value > 0) {
+        await Lighting.find_token_lighting(placed_token);
+      }
+    }
   }
   
-  static async check_all_token_lighting(data) {
+  static async check_all_tokens_lightingRefresh() {
+    for (const placed_token of canvas.tokens.placeables) {
+      Lighting.check_token_lighting(placed_token);
+    }
+  }
+
+  static async check_all_tokens_effectUpdate(data) {
     if (data.label == game.i18n.localize('tokenlightcond-effect-light')) {
       for (const placed_token of canvas.tokens.placeables) {
-        if (Core.isValidActor(placed_token)) {
-          Lighting.check_token_lighting(placed_token);
-        }
+        Lighting.check_token_lighting(placed_token);
       }
     }
   }
@@ -95,7 +116,7 @@ export class Lighting {
     await selected_token.actor.setFlag('tokenlightcondition', 'lightLevel', lightLevelText);
     
     let result = selected_token.actor.getFlag('tokenlightcondition','lightLevel')
-    Core.log(`${selected_token.actor.name} : ${result}`);
+    //Core.log(`${selected_token.actor.name} : ${result}`);
 
     return result;
   }

@@ -2,6 +2,8 @@
 import { Core } from './utils/core.js';
 import { Lighting } from './utils/lighting.js';
 
+let canvasDarknessLevel = 'dark';
+
 // ******************************************
 // Hooks
 // ******************************************
@@ -15,6 +17,8 @@ Hooks.once('ready', () => {
   const module = game.modules.get('tokenlightcondition');
   const moduleVersion = module.version;
   console.log(`tokenlightcondition | Ready ${moduleVersion}`);
+
+  canvasDarknessLevel = Lighting.setDarknessThreshold(canvas.darknessLevel);
 
   // create CE effects
   const ce = game.dfreds?.effectInterface;
@@ -48,16 +52,19 @@ Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
 });
 
 Hooks.on('deleteActiveEffect', (data) => {
-  Core.log('deleteActiveEffect:', data.label, {data});
+//  Core.log('deleteActiveEffect:', data.label, {data});
   if(game.user.isGM) {
-//    Stealth.updateStealth(data);
+  // TODO: Check if token lighting has changed, Light spell or other
+  // and trigger a check_all_tokens_lightingRefresh()
   }
 });
 
 Hooks.on('createActiveEffect', (data) => {
-  Core.log('createActiveEffect:', data.label, {data});
+//  Core.log('createActiveEffect:', data.label, {data});
   if(game.user.isGM) {
-  }
+  // TODO: Check if token lighting has changed, Light spell or other
+  // and trigger a check_all_tokens_lightingRefresh()
+}
 });
 
 // This occurs on both server and client
@@ -72,6 +79,21 @@ Hooks.on(`updateToken`, (data, diff, options, userId) => {
     }
   }
 });
+
+Hooks.on('lightingRefresh', (data) => {
+  if (game.user.isGM) {
+    testLightingRefresh();
+  }
+});
+
+function testLightingRefresh() {
+  // has the light level change of the scene crossed a threshold?
+  let testLight = Lighting.setDarknessThreshold(canvas.darknessLevel);
+  if (canvasDarknessLevel != testLight) {
+    Lighting.check_all_tokens_lightingRefresh();
+    canvasDarknessLevel = testLight;
+  }
+}
 
 Hooks.on('renderSettingsConfig', (app, html, data) => {
   $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-debug')).insertBefore($('[name="tokenlightcondition.logLevel"]').parents('div.form-group:first'));
