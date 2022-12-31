@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/github/license/frstrm/tokenlightcondition?label=License)](LICENSE)
+[![License](https://img.shields.io/github/license/Frstrm/TokenLightCondition?label=License)](LICENSE)
 [![Latest Version](https://img.shields.io/github/v/release/frstrm/tokenlightcondition?display_name=tag&sort=semver&label=Latest%20Version)](https://github.com/frstrm/tokenlightcondition/releases/latest)
 ![Foundry Version](https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffrstrm%2Ftokenlightcondition%2Fmain%2Fmodule.json)
 
