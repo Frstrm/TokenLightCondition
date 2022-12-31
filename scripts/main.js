@@ -64,7 +64,7 @@ Hooks.on('createActiveEffect', (data) => {
   if(game.user.isGM) {
   // TODO: Check if token lighting has changed, Light spell or other
   // and trigger a check_all_tokens_lightingRefresh()
-}
+  }
 });
 
 // This occurs on both server and client
