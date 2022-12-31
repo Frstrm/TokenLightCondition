@@ -38,8 +38,8 @@ Hooks.on('refreshToken', (token) => {
 
 Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
   let selected_token = Core.find_selected_token(tokenHUD);
-  if (Core.isValidActor(selected_token)){
-    if (game.user.isGM){
+  if (Core.isValidActor(selected_token)) {
+    if (game.user.isGM) {
       show_gm_tokenhud(selected_token, tokenHUD,html);
     } else {
       show_player_tokenhud(selected_token, tokenHUD,html);
@@ -47,25 +47,25 @@ Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
   }
 });
 
-Hooks.on('deleteActiveEffect', (data) =>{
+Hooks.on('deleteActiveEffect', (data) => {
   Core.log('deleteActiveEffect:', data.label, {data});
-  if(game.user.isGM){
+  if(game.user.isGM) {
 //    Stealth.updateStealth(data);
   }
 });
 
-Hooks.on('createActiveEffect', (data) =>{
+Hooks.on('createActiveEffect', (data) => {
   Core.log('createActiveEffect:', data.label, {data});
-  if(game.user.isGM){
+  if(game.user.isGM) {
   }
 });
 
 // This occurs on both server and client
 Hooks.on(`updateToken`, (data, diff, options, userId) => {
-  if (game.user.isGM){
+  if (game.user.isGM) {
     if (diff.x || diff.y || diff.elevation) { // If the x/y is updated, they moved.
-      for (const placed_token of canvas.tokens.placeables){
-        if (placed_token.id == data._id){ // Find the Token in Question
+      for (const placed_token of canvas.tokens.placeables) {
+        if (placed_token.id == data._id) { // Find the Token in Question
           Lighting.check_token_lighting(placed_token);
         }
       }
@@ -81,10 +81,10 @@ Hooks.on('renderSettingsConfig', (app, html, data) => {
 // Functions
 // ******************************************
 
-function show_gm_tokenhud(selected_token, tokenHUD,html){
+function show_gm_tokenhud(selected_token, tokenHUD,html) {
   Lighting.show_lightLevel_box(selected_token, tokenHUD,html);
 }
 
-function show_player_tokenhud(selected_token, tokenHUD,html){
+function show_player_tokenhud(selected_token, tokenHUD,html) {
   Lighting.show_lightLevel_box(selected_token, tokenHUD,html);
 }
