@@ -1,4 +1,4 @@
-### Pending
+### Version 0.1.0
 * Updates effects on tokens on scene Darkness Level changes.
 * Updates effects on tokens when dropped into scene.
 
