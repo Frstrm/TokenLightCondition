@@ -1,0 +1,11 @@
+{
+  "tokenlightcond-config-debug": "Debug Options",
+  "tokenlightcond-config-general": "General Options",
+  "tokenlightcond-config-logLevel-name": "Console logging level",
+  "tokenlightcond-config-logLevel-hint": "Determine if console debug or log is used.",
+  "tokenlightcond-effect-dark": "Dark",
+  "tokenlightcond-effect-dark-desc": "Token is in 'the Dark' lighting",
+  "tokenlightcond-effect-dim": "Dim",
+  "tokenlightcond-effect-dim-desc": "Token is in Dim lighting",
+  "tokenlightcond-effect-light": "Light"
+}
