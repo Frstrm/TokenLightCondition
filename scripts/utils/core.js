@@ -1,3 +1,5 @@
+import { Lighting } from './lighting.js';
+
 export class Core {
 
   static CONSOLE_COLORS = ['background: #222; color: #ff80ff', 'color: #fff'];
@@ -20,19 +22,20 @@ export class Core {
     }
   }
 
-  static initialize_token(token) {
+  static async initialize_token(token) {
     if (game.user.isGM) {
       if (token.actor) {
         if (token.actor.type == 'character' || token.actor.type == 'npc') {
           if (!token.actor.flags['tokenlightcondition']) {
-            token.actor.setFlag('tokenlightcondition');
+            await token.actor.setFlag('tokenlightcondition');
+            Lighting.check_token_lighting(token);
           }
         }
       }
     }
   }
 
-  static isValidActor(selected_token) {
+  static async isValidActor(selected_token) {
     if (selected_token.actor) {
       if (selected_token.actor.type == 'character' || selected_token.actor.type == 'npc') {
         return true;

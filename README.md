@@ -17,6 +17,12 @@ Adds a token Hud element to selected token (right-click the token):
 * Lighting - ( DRK, DIM, BRT )
 Adds an Effect when token is in Dim or Dark conditions.
 Removes Dim/Dark effects while in Bright conditions.
+Updates tokens on scene Darkness Level changes.
+Tokens will be updated on drop in scene.
+
+# Known Issues
+Tokens currently ONLY checks against placed lights, and token lighting.
+Efforts are being made for tokens to respect tile overrides, and other layers.
 
 ## Options
 
