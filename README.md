@@ -12,36 +12,46 @@ A module for <a href="https://foundryvtt.com/">FoundryVTT</a> that modifies toke
 # Purpose
 
 Determine the light condition of a token, and generate effects on the token to indicate light condtions.
+
 This is to allow players, or modules to use these effects to help rules determination around those conditions.
 
 # Features
 
-Adds a token Hud element to selected token (right-click the token):
-* Lighting - ( DRK, DIM, BRT )
-Adds an Effect when token is in Dim or Dark conditions.
-Removes Dim/Dark effects while in Bright conditions.
-Updates tokens on scene Darkness Level changes.
-Tokens will be updated on drop in scene.
+- Adds a token Hud element to selected token (right-click the token):
+- Lighting - ( DRK, DIM, BRT )
+- Adds an Effect when token is in Dim or Dark conditions.
+- Removes Dim/Dark effects while in Bright conditions.
+- Updates tokens on scene Darkness Level changes.
+- Tokens will be updated on drop in scene.
 
 # Known Issues
 Tokens currently ONLY checks against placed lights, and token lighting.
+
 Efforts are being made for tokens to respect tile overrides, and other layers.
 
 ## Options
 
 ### **Console logging level**
-Sets the level of console used for logging (no logging, debug, log)
-Just set to 'No ogging' to turn off any output.
+Sets the level of console used for logging:
+<ul>
+  <li>No Logging - Use this for no output</li>
+  <li>Debug</li>
+  <li>Log</li>
+</ul>
 
 ### **Source for lighting effect**
 Choose which source or application the effects are generated from.
-  Disable token effect (None)
-  Token Light Condition (Active Effects)
-  Convienent Effects (CE)
-  Combat Utility Belt (CUB)
+<ul>
+  <li>Disable token effect (None)</li>
+<li>Token Light Condition (Active Effects)</li>
+<li>Convienent Effects (CE)</li>
+<li>Combat Utility Belt (CUB)</li>
+</ul>
 
 None means there are token effects, but the token Hud will still work.
-CUB option is only available if both Dim AND Dark conditions exist in the Lab
+
+CUB option is only available if both Dim AND Dark conditions exist in the Lab.
+
 Convienent Effects entries are added on module load if they don't exist.
 
 ## Suggested Modules
