@@ -1,6 +1,7 @@
 
 import { Core } from './utils/core.js';
 import { Lighting } from './utils/lighting.js';
+import { Effects } from './utils/effects.js';
 
 let canvasDarknessLevel = 'dark';
 
@@ -20,20 +21,8 @@ Hooks.once('ready', () => {
 
   canvasDarknessLevel = Lighting.setDarknessThreshold(canvas.darknessLevel);
 
-  // create CE effects
-  const ce = game.dfreds?.effectInterface;
-  if (ce) {
-    let ceDark = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond-effect-dark'));
-    if (!ceDark) {
-      const dark = Lighting.makeDarkEffect();
-      ce.createNewCustomEffectsWith({ activeEffects: [dark] });
-    }
-    let ceDim = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond-effect-dim'));
-    if (!ceDim) {
-      const dim = Lighting.makeDimEffect();
-      ce.createNewCustomEffectsWith({ activeEffects: [dim] });
-    }
-  }
+  Effects.initializeEffects();
+
 });
 
 Hooks.on('refreshToken', (token) => {
@@ -97,6 +86,7 @@ function testLightingRefresh() {
 
 Hooks.on('renderSettingsConfig', (app, html, data) => {
   $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-debug')).insertBefore($('[name="tokenlightcondition.logLevel"]').parents('div.form-group:first'));
+  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-general')).insertBefore($('[name="tokenlightcondition.effectSource"]').parents('div.form-group:first'));
 });
 
 // ******************************************
