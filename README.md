@@ -2,6 +2,9 @@
 [![Latest Version](https://img.shields.io/github/v/release/frstrm/tokenlightcondition?display_name=tag&sort=semver&label=Latest%20Version)](https://github.com/frstrm/tokenlightcondition/releases/latest)
 ![Foundry Version](https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffrstrm%2Ftokenlightcondition%2Fmain%2Fmodule.json)
 
+![Latest Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/latest/total?color=blue&label=latest%20downloads)
+![Total Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/total?color=blue&label=total%20downloads)
+
 # TokenLightCondition
 
 A module for <a href="https://foundryvtt.com/">FoundryVTT</a> that modifies token effects based on lighting conditions.
@@ -29,6 +32,17 @@ Efforts are being made for tokens to respect tile overrides, and other layers.
 ### **Console logging level**
 Sets the level of console used for logging (no logging, debug, log)
 Just set to 'No ogging' to turn off any output.
+
+### **Source for lighting effect**
+Choose which source or application the effects are generated from.
+  Disable token effect (None)
+  Token Light Condition (Active Effects)
+  Convienent Effects (CE)
+  Combat Utility Belt (CUB)
+
+None means there are token effects, but the token Hud will still work.
+CUB option is only available if both Dim AND Dark conditions exist in the Lab
+Convienent Effects entries are added on module load if they don't exist.
 
 ## Suggested Modules
 * [Stealthy](https://foundryvtt.com/packages/stealthy)

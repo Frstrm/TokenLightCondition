@@ -20,4 +20,32 @@ Hooks.once('ready', () => {
     default: 'none'
   });
 
+  let choices = {
+    'none': game.i18n.localize("tokenlightcond-effectSource-none"),
+    'ae': game.i18n.localize("tokenlightcond-effectSource-ae"),
+  };
+  let defaultSource = 'ae';
+  let findCubDark = game.cub?.getCondition(game.i18n.localize("tokenlightcond-effect-dark"));
+  let findCubDim = game.cub?.getCondition(game.i18n.localize("tokenlightcond-effect-dim"));
+  let findCE = game.dfreds?.effectInterface;
+
+  if (findCubDark && findCubDim) {
+    choices['cub'] = game.i18n.localize("tokenlightcond-effectSource-cub");
+    defaultSource = 'cub';
+  }
+  if (findCE) {
+    choices['ce'] = game.i18n.localize("tokenlightcond-effectSource-ce");
+    defaultSource = 'ce';
+  }
+
+  game.settings.register('tokenlightcondition', 'effectSource', {
+    name: game.i18n.localize("tokenlightcond-effectSource-name"),
+    hint: game.i18n.localize("tokenlightcond-effectSource-hint"),
+    scope: 'world',
+    config: true,
+    type: String,
+    choices,
+    default: defaultSource
+  });
+
 });

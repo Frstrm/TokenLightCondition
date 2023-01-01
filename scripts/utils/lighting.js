@@ -1,4 +1,5 @@
 import { Core } from './core.js';
+import { Effects } from './effects.js';
 
 export class Lighting {
 
@@ -18,8 +19,8 @@ export class Lighting {
 
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
     // Determine lightLevel of the token (dark,dim,light)
-    let flagText = await Lighting.find_token_lighting(selected_token);
-    let boxString = Lighting.lightTable[flagText];
+    let flagText = await this.find_token_lighting(selected_token);
+    let boxString = this.lightTable[flagText];
 
     const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
     html.find('.right').append(divToAdd);
@@ -32,21 +33,21 @@ export class Lighting {
     let actorCheck = Core.isValidActor(placed_token);
     if (actorCheck) {
       if (placed_token.actor.system.attributes.hp.value > 0) {
-        await Lighting.find_token_lighting(placed_token);
+        await this.find_token_lighting(placed_token);
       }
     }
   }
   
   static async check_all_tokens_lightingRefresh() {
     for (const placed_token of canvas.tokens.placeables) {
-      Lighting.check_token_lighting(placed_token);
+      this.check_token_lighting(placed_token);
     }
   }
 
   static async check_all_tokens_effectUpdate(data) {
     if (data.label == game.i18n.localize('tokenlightcond-effect-light')) {
       for (const placed_token of canvas.tokens.placeables) {
-        Lighting.check_token_lighting(placed_token);
+        this.check_token_lighting(placed_token);
       }
     }
   }
@@ -56,7 +57,7 @@ export class Lighting {
     // placed lights
     for (const placed_lights of canvas.lighting.objects.children) {
       if (placed_lights.source.active == true) {
-        let tokenDistance = Lighting.get_calculated_light_distance(selected_token, placed_lights);
+        let tokenDistance = this.get_calculated_light_distance(selected_token, placed_lights);
         let foundWall = Core.get_wall_collision(selected_token, placed_lights);
         if (!foundWall) {
           // check for dim
@@ -103,15 +104,15 @@ export class Lighting {
     switch (lightLevel) {
       case 0:
         lightLevelText = 'dark';
-        Lighting.addDark(selected_token);
+        Effects.addDark(selected_token);
         break;
       case 1:
         lightLevelText = 'dim';
-        Lighting.addDim(selected_token);
+        Effects.addDim(selected_token);
         break;
       case 2:
         lightLevelText = 'bright';
-        Lighting.clearEffects(selected_token);
+        Effects.clearEffects(selected_token);
     }        
     await selected_token.actor.setFlag('tokenlightcondition', 'lightLevel', lightLevelText);
     
@@ -119,47 +120,6 @@ export class Lighting {
     //Core.log(`${selected_token.actor.name} : ${result}`);
 
     return result;
-  }
-  
-  static async clearEffects(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    if (dim) {
-      await game.dfreds.effectInterface.removeEffect({ effectName: dim.label, uuid: selected_token.actor.uuid });
-      Core.log(`CE Dim Removed: ${selected_token.actor.name}`);
-    }
-    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
-    if (dark) {
-      await game.dfreds.effectInterface.removeEffect({ effectName: dark.label, uuid: selected_token.actor.uuid });
-      Core.log(`CE Dark Removed: ${selected_token.actor.name}`);
-    }
-  }
-
-  static async addDark(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    if (dim) {
-      await game.dfreds.effectInterface.removeEffect({ effectName: dim.label, uuid: selected_token.actor.uuid });
-      Core.log(`CE Dim Removed: ${selected_token.actor.name}`);
-    }
-
-    let dark  = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
-    if (!dark) {
-      await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond-effect-dark'), uuid: selected_token.actor.uuid });
-      Core.log(`CE Dark added: ${selected_token.actor.name}`);
-    }
-  }
-
-  static async addDim(selected_token) {
-    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
-    if (dark) {
-      await game.dfreds.effectInterface.removeEffect({ effectName: dark.label, uuid: selected_token.actor.uuid });
-      Core.log(`CE Dark Removed: ${selected_token.actor.name}`);
-    }
-
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    if (!dim) {
-      await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond-effect-dim'), uuid: selected_token.actor.uuid });
-      Core.log(`CE Dim added: ${selected_token.actor.name}`);
-    }
   }
 
   // Check if Token is within defined range of another token i.e. Is friendly token within range of hostile token
@@ -174,28 +134,6 @@ export class Lighting {
 
     calculated_distance = dist * canvas.scene.grid.distance;
     return calculated_distance;
-  }
-
-  static makeDarkEffect() {
-    const dark = {
-      label: game.i18n.localize('tokenlightcond-effect-dark'),
-      icon: 'icons/magic/perception/shadow-stealth-eyes-purple.webp',
-      changes: [],
-      flags: { convenientDescription: game.i18n.localize('tokenlightcond-effect-dark-desc') },
-    };
-
-    return dark;
-  }
-
-  static makeDimEffect() {
-    const dim = {
-      label: game.i18n.localize('tokenlightcond-effect-dim'),
-      icon: 'icons/magic/perception/shadow-stealth-eyes-purple.webp',
-      changes: [],
-      flags: { convenientDescription: game.i18n.localize('tokenlightcond-effect-dim-desc') },
-    };
-
-    return dim;
   }
 
 }
