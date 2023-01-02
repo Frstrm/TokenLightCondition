@@ -48,32 +48,24 @@ export class Effects {
     return dim;
   }
 
-  static async removeEffect(token, effect) {
-    await token.actor.deleteEmbeddedDocuments('ActiveEffect', [effect.id])
-    Core.log(`${effect.label} Removed: ${token.actor.name}`);
-  }
-
   static async clearEffects(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    const dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+    const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
 
     if (dim) {
-      await this.removeEffect(selected_token, dim);
+      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
+      selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
     }
     if (dark) {
-      await this.removeEffect(selected_token, dark);
+      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
+      selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
     }
   }
 
   static async addDark(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    let dark  = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    const dark = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
-
-    if (dim) {
-      await this.removeEffect(selected_token, dim);
-    }
 
     if (!dark) {
       let added = false;
@@ -98,14 +90,9 @@ export class Effects {
   }
 
   static async addDim(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    const dim = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
-
-    if (dark) {
-      await this.removeEffect(selected_token, dark);
-    }
 
     if (!dim) {
       let added = false;
@@ -134,7 +121,7 @@ export class Effects {
   static async addDarkAE(selected_token) {
     // If we haven't found an ouside source, create the default one
     const label = game.i18n.localize("tokenlightcond-effect-dark");
-    let dark = selected_token.actor.effects.find(e => e.label === label);
+    const dark = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dark) {
       dark = {
@@ -152,7 +139,7 @@ export class Effects {
   static async addDimAE(selected_token) {
     // If we haven't found an ouside source, create the default one
     const label = game.i18n.localize("tokenlightcond-effect-dim");
-    let dim = selected_token.actor.effects.find(e => e.label === label);
+    const dim = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dim) {
       dim = {

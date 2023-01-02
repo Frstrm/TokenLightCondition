@@ -5,7 +5,7 @@ export class Lighting {
 
   static lightTable = {'dark':'DRK', 'dim':'DIM', 'bright':'BRT'};
 
-  static setDarknessThreshold(darknessLevel) {
+  static async setDarknessThreshold(darknessLevel) {
     if (darknessLevel >= 0 && darknessLevel < 0.5) {
       return 'bright';
     }
@@ -18,80 +18,82 @@ export class Lighting {
   }
 
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
-    // Determine lightLevel of the token (dark,dim,light)
-    let flagText = await this.find_token_lighting(selected_token);
-    let boxString = this.lightTable[flagText];
+    if (selected_token.actor.system.attributes.hp.value > 0) {
+      // Determine lightLevel of the token (dark,dim,light)
+      let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
 
-    const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
-    html.find('.right').append(divToAdd);
-  
-    divToAdd.change(async (inputbox) => {
-    });
+      const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      html.find('.right').append(divToAdd);
+    
+      divToAdd.change(async (inputbox) => {
+      });
+    }
   }
 
   static async check_token_lighting(placed_token) {
-    let actorCheck = Core.isValidActor(placed_token);
-    if (actorCheck) {
-      if (placed_token.actor.system.attributes.hp.value > 0) {
-        await this.find_token_lighting(placed_token);
+    if (game.user.isGM) {
+      if (Core.isValidActor(placed_token)) {
+        if (placed_token.actor.system.attributes.hp.value > 0) {
+          await this.find_token_lighting(placed_token);
+        } else {
+          Effects.clearEffects(placed_token);
+        }
       }
     }
   }
   
   static async check_all_tokens_lightingRefresh() {
+    let result = [];
     for (const placed_token of canvas.tokens.placeables) {
-      this.check_token_lighting(placed_token);
+        result.push(await this.check_token_lighting(placed_token));
     }
-  }
-
-  static async check_all_tokens_effectUpdate(data) {
-    if (data.label == game.i18n.localize('tokenlightcond-effect-light')) {
-      for (const placed_token of canvas.tokens.placeables) {
-        this.check_token_lighting(placed_token);
-      }
-    }
+    return result;
   }
 
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
     // placed lights
-    for (const placed_lights of canvas.lighting.objects.children) {
-      if (placed_lights.source.active == true) {
-        let tokenDistance = this.get_calculated_light_distance(selected_token, placed_lights);
-        let foundWall = Core.get_wall_collision(selected_token, placed_lights);
-        if (!foundWall) {
-          // check for dim
-          if (tokenDistance <= placed_lights.document.config.dim) {
-            if ((lightLevel < 1) && (placed_lights.document.config.dim > 0)) {
-              lightLevel = 1;
+    if (canvas.lighting.objects) {
+      for (const placed_lights of canvas.lighting.objects.children) {
+        if (placed_lights.source.active == true) {
+          let tokenDistance = this.get_calculated_light_distance(selected_token, placed_lights);
+          let foundWall = Core.get_wall_collision(selected_token, placed_lights);
+          if (!foundWall) {
+            // check for dim
+            if (tokenDistance <= placed_lights.document.config.dim) {
+              if ((lightLevel < 1) && (placed_lights.document.config.dim > 0)) {
+                lightLevel = 1;
+              }
             }
-          }
-          // check for bright
-          if (tokenDistance <= placed_lights.document.config.bright) {
-            if ((lightLevel < 2) && (placed_lights.document.config.bright > 0)) {
-              lightLevel = 2;
+            // check for bright
+            if (tokenDistance <= placed_lights.document.config.bright) {
+              if ((lightLevel < 2) && (placed_lights.document.config.bright > 0)) {
+                lightLevel = 2;
+              }
             }
           }
         }
       }
     }
     // placed tokens
-    for (const placed_tokens of canvas.tokens.placeables) {
-      if (placed_tokens.actor) {
-        if (placed_tokens.light.active == true) {
-          let tokenDistance = Core.get_calculated_distance(selected_token, placed_tokens);
-          let foundWall = Core.get_wall_collision(selected_token, placed_tokens);
-          if (!foundWall) {
-            // check for dim
-            if (tokenDistance <= placed_tokens.document.light.dim) {
-              if ((lightLevel < 1) && (placed_tokens.document.light.dim > 0)) {
-                lightLevel = 1;
+    if (canvas.tokens.placeables) {
+      for (const placed_tokens of canvas.tokens.placeables) {
+        if (placed_tokens.actor) {
+          if (placed_tokens.light.active == true) {
+            let tokenDistance = Core.get_calculated_distance(selected_token, placed_tokens);
+            let foundWall = Core.get_wall_collision(selected_token, placed_tokens);
+            if (!foundWall) {
+              // check for dim
+              if (tokenDistance <= placed_tokens.document.light.dim) {
+                if ((lightLevel < 1) && (placed_tokens.document.light.dim > 0)) {
+                  lightLevel = 1;
+                }
               }
-            }
-            // check for bright
-            if (tokenDistance <= placed_tokens.document.light.bright) {
-              if ((lightLevel < 2) && (placed_tokens.document.light.bright > 0)) {
-                lightLevel = 2;
+              // check for bright
+              if (tokenDistance <= placed_tokens.document.light.bright) {
+                if ((lightLevel < 2) && (placed_tokens.document.light.bright > 0)) {
+                  lightLevel = 2;
+                }
               }
             }
           }
@@ -104,11 +106,19 @@ export class Lighting {
     switch (lightLevel) {
       case 0:
         lightLevelText = 'dark';
-        Effects.addDark(selected_token);
+        let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+        if (!dark) {
+          Effects.clearEffects(selected_token);
+          Effects.addDark(selected_token);
+        }
         break;
       case 1:
         lightLevelText = 'dim';
-        Effects.addDim(selected_token);
+        let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+        if (!dim) {
+          Effects.clearEffects(selected_token);
+          Effects.addDim(selected_token);
+        }
         break;
       case 2:
         lightLevelText = 'bright';
@@ -124,16 +134,19 @@ export class Lighting {
 
   // Check if Token is within defined range of another token i.e. Is friendly token within range of hostile token
   static get_calculated_light_distance(selected_token, placed_lights) {
-    let calculated_distance = 0;
+    let elevated_distance = 0;
+    let gridSize = canvas.grid.size;
+    let gridDistance = canvas.scene.grid.distance;
 
-    // Measure grid distance
-    let gridsize = canvas.grid.size;
-    let d1 = Math.abs((selected_token.center.x - placed_lights.document.x) / gridsize);
-    let d2 = Math.abs((selected_token.center.y - placed_lights.document.y) / gridsize);
-    let dist = Math.max(d1, d2);
+    // Measure grid distance with elevation
+    let e1 = Math.abs((selected_token.center.x - placed_lights.document.x));
+    let e2 = Math.abs((selected_token.center.y - placed_lights.document.y));
+    // lights don't have elevation?
+    let e3 = Math.abs(((selected_token.document.elevation/gridDistance)* gridSize));
+    let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
-    calculated_distance = dist * canvas.scene.grid.distance;
-    return calculated_distance;
+    elevated_distance = (distance / gridSize) * gridDistance;;
+
+    return elevated_distance;
   }
-
 }

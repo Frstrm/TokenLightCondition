@@ -24,20 +24,17 @@ export class Core {
 
   static async initialize_token(token) {
     if (game.user.isGM) {
-      if (token.actor) {
-        if (token.actor.type == 'character' || token.actor.type == 'npc') {
-          if (!token.actor.flags['tokenlightcondition']) {
-            await token.actor.setFlag('tokenlightcondition');
-            Lighting.check_token_lighting(token);
-          }
-        }
-      }
+      await token.actor.setFlag('tokenlightcondition');
+      Lighting.check_token_lighting(token);
     }
   }
 
   static async isValidActor(selected_token) {
     if (selected_token.actor) {
       if (selected_token.actor.type == 'character' || selected_token.actor.type == 'npc') {
+        if (!selected_token.actor.flags['tokenlightcondition']) {
+          this.initialize_token(selected_token);
+        }
         return true;
       }
     }
@@ -93,16 +90,19 @@ export class Core {
 
     // Check if Token is within defined range of another token i.e. Is friendly token within range of hostile token
   static get_calculated_distance(selected_token, placed_token) {
-    let calculated_distance = 0;
+    let elevated_distance = 0;
+    let gridSize = canvas.grid.size;
+    let gridDistance = canvas.scene.grid.distance;
 
-    // Measure grid distance
-    let gridsize = canvas.grid.size;
-    let d1 = Math.abs((selected_token.center.x - placed_token.center.x) / gridsize);
-    let d2 = Math.abs((selected_token.center.y - placed_token.center.y) / gridsize);
-    let dist = Math.max(d1, d2);
+    // Measure grid distance with elevation
+    let e1 = Math.abs((selected_token.center.x - placed_token.center.x));
+    let e2 = Math.abs((selected_token.center.y - placed_token.center.y));
+    let e3 = Math.abs((((selected_token.document.elevation / gridDistance) - (placed_token.document.elevation / gridDistance)) * gridSize));
+    let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
-    calculated_distance = dist * canvas.scene.grid.distance;
-    return calculated_distance;
+    elevated_distance = (distance / gridSize) * gridDistance;;
+
+    return elevated_distance;
   }
 
   static get_wall_collision(selected_token, targetObject) {
