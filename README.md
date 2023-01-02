@@ -5,7 +5,7 @@
 ![Latest Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/latest/total?color=blue&label=latest%20downloads)
 ![Total Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/total?color=blue&label=total%20downloads)
 
-# TokenLightCondition
+# Token Light Condition
 
 A module for <a href="https://foundryvtt.com/">FoundryVTT</a> that modifies token effects based on lighting conditions.
 
@@ -43,9 +43,9 @@ Sets the level of console used for logging:
 Choose which source or application the effects are generated from.
 <ul>
   <li>Disable token effect (None)</li>
-<li>Token Light Condition (Active Effects)</li>
-<li>Convienent Effects (CE)</li>
-<li>Combat Utility Belt (CUB)</li>
+  <li>Token Light Condition (Active Effects)</li>
+  <li>Convienent Effects (CE)</li>
+  <li>Combat Utility Belt (CUB)</li>
 </ul>
 
 None means there are token effects, but the token Hud will still work.

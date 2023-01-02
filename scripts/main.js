@@ -40,22 +40,6 @@ Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
   }
 });
 
-Hooks.on('deleteActiveEffect', (data) => {
-//  Core.log('deleteActiveEffect:', data.label, {data});
-  if(game.user.isGM) {
-  // TODO: Check if token lighting has changed, Light spell or other
-  // and trigger a check_all_tokens_lightingRefresh()
-  }
-});
-
-Hooks.on('createActiveEffect', (data) => {
-//  Core.log('createActiveEffect:', data.label, {data});
-  if(game.user.isGM) {
-  // TODO: Check if token lighting has changed, Light spell or other
-  // and trigger a check_all_tokens_lightingRefresh()
-  }
-});
-
 // This occurs on both server and client
 Hooks.on(`updateToken`, (data, diff, options, userId) => {
   if (game.user.isGM) {

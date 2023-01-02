@@ -48,32 +48,24 @@ export class Effects {
     return dim;
   }
 
-  static async removeEffect(token, effect) {
-    await token.actor.deleteEmbeddedDocuments('ActiveEffect', [effect.id])
-    Core.log(`${effect.label} Removed: ${token.actor.name}`);
-  }
-
   static async clearEffects(selected_token) {
     let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
     let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
 
     if (dim) {
-      await this.removeEffect(selected_token, dim);
+      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
     }
     if (dark) {
-      await this.removeEffect(selected_token, dark);
+      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
     }
   }
 
   static async addDark(selected_token) {
-    let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    let dark  = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
 
-    if (dim) {
-      await this.removeEffect(selected_token, dim);
-    }
+    this.clearEffects(selected_token);
 
     if (!dark) {
       let added = false;
@@ -99,13 +91,10 @@ export class Effects {
 
   static async addDim(selected_token) {
     let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
 
-    if (dark) {
-      await this.removeEffect(selected_token, dark);
-    }
+    this.clearEffects(selected_token);
 
     if (!dim) {
       let added = false;
