@@ -25,13 +25,13 @@ export class Core {
   static async initialize_token(token) {
     if (game.user.isGM) {
       await token.actor.setFlag('tokenlightcondition');
+      Lighting.check_token_lighting(token);
     }
   }
 
   static async isValidActor(selected_token) {
     if (selected_token.actor) {
       if (selected_token.actor.type == 'character' || selected_token.actor.type == 'npc') {
-        // need to be initialized?
         if (!selected_token.actor.flags['tokenlightcondition']) {
           this.initialize_token(selected_token);
         }

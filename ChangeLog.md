@@ -1,5 +1,8 @@
 ### Pending
 * Distance calculations now account for elevation
+* Effects are now updated on lightingRefresh
+* added armor around updates and token checks
+
 ### Version 0.2.0
 * Added option to select effect source.
 * * none, Active Effect, CUB, Convenient Effect

@@ -18,16 +18,18 @@ This is to allow players, or modules to use these effects to help rules determin
 # Features
 
 - Adds a token Hud element to selected token (right-click the token):
-- Lighting - ( DRK, DIM, BRT )
+-   Hud indicator - ( DRK, DIM, BRT )
 - Adds an Effect when token is in Dim or Dark conditions.
 - Removes Dim/Dark effects while in Bright conditions.
 - Updates tokens on scene Darkness Level changes.
 - Tokens will be updated on drop in scene.
+- Only processes tokens that are of type: character, npc
+-    And have hp > 0
 
 # Known Issues
 Tokens currently ONLY checks against placed lights, and token lighting.
 
-Efforts are being made for tokens to respect tile overrides, and other layers.
+Efforts are being made for tokens to respect tile overrides, and other methods.
 
 ## Options
 

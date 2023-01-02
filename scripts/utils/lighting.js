@@ -18,14 +18,16 @@ export class Lighting {
   }
 
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
-    // Determine lightLevel of the token (dark,dim,light)
-    let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
+    if (selected_token.actor.system.attributes.hp.value > 0) {
+      // Determine lightLevel of the token (dark,dim,light)
+      let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
 
-    const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
-    html.find('.right').append(divToAdd);
-  
-    divToAdd.change(async (inputbox) => {
-    });
+      const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      html.find('.right').append(divToAdd);
+    
+      divToAdd.change(async (inputbox) => {
+      });
+    }
   }
 
   static async check_token_lighting(placed_token) {
@@ -33,6 +35,8 @@ export class Lighting {
       if (Core.isValidActor(placed_token)) {
         if (placed_token.actor.system.attributes.hp.value > 0) {
           await this.find_token_lighting(placed_token);
+        } else {
+          Effects.clearEffects(placed_token);
         }
       }
     }
