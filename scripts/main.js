@@ -26,7 +26,7 @@ Hooks.once('ready', () => {
 });
 
 Hooks.on('refreshToken', (token) => {
-  Core.initialize_token(token);
+//  Core.initialize_token(token);
 });
 
 Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
@@ -41,17 +41,30 @@ Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
 });
 
 // This occurs on both server and client
-Hooks.on(`updateToken`, (data, diff, options, userId) => {
+Hooks.on('updateToken', (data, diff, options, userId) => {
   if (game.user.isGM) {
     if (diff.x || diff.y || diff.elevation) { // If the x/y is updated, they moved.
       for (const placed_token of canvas.tokens.placeables) {
         if (placed_token.id == data._id) { // Find the Token in Question
-          Lighting.check_token_lighting(placed_token);
+//          testUpdateToken(placed_token);
         }
       }
     }
   }
 });
+
+let inProgressUpdate = false;
+
+async function testUpdateToken( placed_token) {
+  if (!inProgressUpdate) {
+    inProgressUpdate = true;
+    let result = await Lighting.check_token_lighting(placed_token);
+    Core.log('testUpdateToken Result:',result);
+    inProgressUpdate = false;
+  } else {
+    Core.log("updateToken Busy")
+  }
+}
 
 Hooks.on('lightingRefresh', (data) => {
   if (game.user.isGM) {
@@ -59,12 +72,19 @@ Hooks.on('lightingRefresh', (data) => {
   }
 });
 
-function testLightingRefresh() {
-  // has the light level change of the scene crossed a threshold?
-  let testLight = Lighting.setDarknessThreshold(canvas.darknessLevel);
-  if (canvasDarknessLevel != testLight) {
-    Lighting.check_all_tokens_lightingRefresh();
+let inProgressLight = false;
+
+async function testLightingRefresh() {
+  if (!inProgressLight) {
+    // has the light level change of the scene crossed a threshold?
+    let testLight = await Lighting.setDarknessThreshold(canvas.darknessLevel);
+//    if (canvasDarknessLevel != testLight) {
+    inProgressLight = true;
+    await Lighting.check_all_tokens_lightingRefresh();
     canvasDarknessLevel = testLight;
+    inProgressLight = false;
+  } else {
+    Core.log("testLightingRefresh Busy");
   }
 }
 

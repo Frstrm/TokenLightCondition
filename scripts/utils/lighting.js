@@ -5,7 +5,7 @@ export class Lighting {
 
   static lightTable = {'dark':'DRK', 'dim':'DIM', 'bright':'BRT'};
 
-  static setDarknessThreshold(darknessLevel) {
+  static async setDarknessThreshold(darknessLevel) {
     if (darknessLevel >= 0 && darknessLevel < 0.5) {
       return 'bright';
     }
@@ -28,20 +28,22 @@ export class Lighting {
     });
   }
 
-  static check_token_lighting(placed_token) {
+  static async check_token_lighting(placed_token) {
     if (game.user.isGM) {
       if (Core.isValidActor(placed_token)) {
         if (placed_token.actor.system.attributes.hp.value > 0) {
-          this.find_token_lighting(placed_token);
+          await this.find_token_lighting(placed_token);
         }
       }
     }
   }
   
   static async check_all_tokens_lightingRefresh() {
+    let result = [];
     for (const placed_token of canvas.tokens.placeables) {
-        this.check_token_lighting(placed_token);
+        result.push(await this.check_token_lighting(placed_token));
     }
+    return result;
   }
 
   static async find_token_lighting(selected_token) {
