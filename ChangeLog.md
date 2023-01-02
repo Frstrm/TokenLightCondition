@@ -1,7 +1,9 @@
-### Pending
+### Version 0.3.0
 * Distance calculations now account for elevation
 * Effects are now updated on lightingRefresh
-* added armor around updates and token checks
+* Added armor around updates and token checks
+* Effects are removed if at 0 hp.
+* TokenHud light indicator is not show at 0 hp.
 
 ### Version 0.2.0
 * Added option to select effect source.

@@ -23,8 +23,8 @@ This is to allow players, or modules to use these effects to help rules determin
 - Removes Dim/Dark effects while in Bright conditions.
 - Updates tokens on scene Darkness Level changes.
 - Tokens will be updated on drop in scene.
-- Only processes tokens that are of type: character, npc
--    And have hp > 0
+- Token is only processed if of type (character, npc) and have hp > 0
+- TokenHud light box indicator is only shown if token hp > 0
 
 # Known Issues
 Tokens currently ONLY checks against placed lights, and token lighting.
