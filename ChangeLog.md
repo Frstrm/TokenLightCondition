@@ -1,3 +1,6 @@
+### Pending
+* Detecting Token is in a drawing with lighting overrides (perfect-vision)
+
 ### Version 0.3.1
 * variable assignment fix
 

@@ -27,9 +27,10 @@ This is to allow players, or modules to use these effects to help rules determin
 - TokenHud light box indicator is only shown if token hp > 0
 
 # Known Issues
-Tokens currently ONLY checks against placed lights, and token lighting.
+Tokens currently checks against placed lights, and token lighting.
 
 Efforts are being made for tokens to respect tile overrides, and other methods.
+* Drawings with lighting overrides (perfect-vision)
 
 ## Options
 

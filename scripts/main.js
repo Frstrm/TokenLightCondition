@@ -6,7 +6,6 @@ import { Effects } from './utils/effects.js';
 // ******************************************
 // Globals
 // ******************************************
-let canvasDarknessLevel = 'dark';
 let inProgressLight = false;
 let moduleState = false;
 
@@ -24,8 +23,6 @@ Hooks.once('ready', () => {
   const moduleVersion = module.version;
   console.log(`tokenlightcondition | Ready ${moduleVersion}`);
   moduleState = true;
-
-  canvasDarknessLevel = Lighting.setDarknessThreshold(canvas.darknessLevel);
 
   Effects.initializeEffects();
 });
@@ -67,10 +64,7 @@ Hooks.on('renderSettingsConfig', (app, html, data) => {
 async function processLightingRefresh() {
   if (!inProgressLight) {
     inProgressLight = true;
-    // has the light level change of the scene crossed a threshold?
-    const testLight = await Lighting.setDarknessThreshold(canvas.darknessLevel);
     await Lighting.check_all_tokens_lightingRefresh();
-    canvasDarknessLevel = testLight;
     inProgressLight = false;
   } else {
     Core.log("lightingRefresh Busy");

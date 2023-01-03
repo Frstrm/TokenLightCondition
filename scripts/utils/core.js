@@ -93,11 +93,19 @@ export class Core {
     let elevated_distance = 0;
     let gridSize = canvas.grid.size;
     let gridDistance = canvas.scene.grid.distance;
+    
+    const x1 = selected_token.center.x;
+    const y1 = selected_token.center.y;
+    const z1 = (selected_token.document.elevation / gridDistance) * gridSize;
+
+    const x2 = placed_token.center.x;
+    const y2 = placed_token.center.y;
+    const z2 = (placed_token.document.elevation / gridDistance) * gridSize;
 
     // Measure grid distance with elevation
-    let e1 = Math.abs((selected_token.center.x - placed_token.center.x));
-    let e2 = Math.abs((selected_token.center.y - placed_token.center.y));
-    let e3 = Math.abs((((selected_token.document.elevation / gridDistance) - (placed_token.document.elevation / gridDistance)) * gridSize));
+    let e1 = Math.abs(x1 - x2);
+    let e2 = Math.abs(y1 - y2);
+    let e3 = Math.abs(z1 - z2);
     let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
     elevated_distance = (distance / gridSize) * gridDistance;;
@@ -113,6 +121,89 @@ export class Core {
       return true; // found collision
     }
   }
-  
-}
 
+  static placedDrawingsContain(placeable, token) {
+    let position = token.center
+
+    if (placeable instanceof DrawingDocument) {
+      let x = placeable.x;
+      let y = placeable.y;
+      let width = placeable.shape.width;
+      let height = placeable.shape.height;
+      let type = placeable.shape.type;
+
+      if (placeable.rotation != 0) {
+        let drawing_center = [x + 0.5 * width, y + 0.5 * height];
+        position = {
+          x:
+            Math.cos((-placeable.rotation * Math.PI) / 180) * (position.x - drawing_center[0]) -
+            Math.sin((-placeable.rotation * Math.PI) / 180) * (position.y - drawing_center[1]) +
+            drawing_center[0],
+          y:
+            Math.sin((-placeable.rotation * Math.PI) / 180) * (position.x - drawing_center[0]) +
+            Math.cos((-placeable.rotation * Math.PI) / 180) * (position.y - drawing_center[1]) +
+            drawing_center[1],
+        };
+      }
+
+      if (Number.between(position.x, x, x + width) && Number.between(position.y, y, y + height)) {
+        if (type == 'r') { // rectangular
+          return true;
+        } else if (type == 'e') { // ellipse
+          return (
+            (position.x - x - 0.5 * width) ** 2 * (0.5 * height) ** 2 +
+              (position.y - y - 0.5 * height) ** 2 * (0.5 * width) ** 2 <=
+            (0.5 * width) ** 2 * (0.5 * height) ** 2
+          );
+        } else if (type == 'p' || type == 'f') { // polygon or freehand
+          let vertices = [];
+          for (let i = 0; i < placeable.shape.points.length; i++) {
+            if (i % 2) vertices.push([placeable.shape.points[i-1] + x, placeable.shape.points[i] + y])
+          }
+          let isInside = false;
+          let i = 0,
+            j = vertices.length - 1;
+          for (i, j; i < vertices.length; j = i++) {
+            if (
+              vertices[i][1] > position.y != vertices[j][1] > position.y &&
+              position.x <
+                ((vertices[j][0] - vertices[i][0]) * (position.y - vertices[i][1])) /
+                  (vertices[j][1] - vertices[i][1]) +
+                  vertices[i][0]
+            ) {
+              isInside = !isInside;
+            }
+          }
+          return isInside;
+        } else {
+          return true; // not a known drawing type, assume bounding box
+        }
+      } else {
+        return false; // outside the bounding box
+      }
+    }
+
+    // TODO other specific placeable case NoteDocument, WallDocument
+    else {
+      // Other types of placeables don't have an area that could contain the position
+      let width = placeable.w ?? placeable.document?.width ?? placeable.width;
+      if (placeable?.object) {
+        width = placeable?.object?.w ?? placeable?.object?.document?.width ?? placeable?.object?.width ?? width;
+      }
+      let height = placeable.h ?? placeable.document?.height ?? placeable.height;
+      if (placeable?.object) {
+        height = placeable?.object?.h ?? placeable?.object?.document?.height ?? placeable?.object?.height ?? height;
+      }
+      let x = placeable.x ?? placeable?.document?.x;
+      if (placeable?.object) {
+        x = placeable?.object?.x ?? placeable?.object?.document?.x ?? x;
+      }
+      let y = placeable?.y ?? placeable?.document?.y;
+      if (placeable?.object) {
+        y = placeable?.object?.y ?? placeable?.object?.document?.y ?? y;
+      }
+      return Number.between(position.x, x, x + width) && Number.between(position.y, y, y + height);
+    }
+  }
+
+}
