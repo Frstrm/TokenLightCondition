@@ -1,3 +1,6 @@
+### Version 0.3.1
+* variable assignment fix
+
 ### Version 0.3.0
 * Distance calculations now account for elevation
 * Effects are now updated on lightingRefresh

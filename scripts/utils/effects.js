@@ -121,7 +121,7 @@ export class Effects {
   static async addDarkAE(selected_token) {
     // If we haven't found an ouside source, create the default one
     const label = game.i18n.localize("tokenlightcond-effect-dark");
-    const dark = selected_token.actor.effects.find(e => e.label === label);
+    let dark = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dark) {
       dark = {
@@ -139,7 +139,7 @@ export class Effects {
   static async addDimAE(selected_token) {
     // If we haven't found an ouside source, create the default one
     const label = game.i18n.localize("tokenlightcond-effect-dim");
-    const dim = selected_token.actor.effects.find(e => e.label === label);
+    let dim = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dim) {
       dim = {
