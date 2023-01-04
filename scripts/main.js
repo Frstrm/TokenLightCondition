@@ -41,7 +41,7 @@ Hooks.on('refreshToken', (token) => {
   }
 })
 
-Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
+Hooks.on('renderTokenHUD', (tokenHUD, html, app) => {
   let selected_token = Core.find_selected_token(tokenHUD);
   if (Core.isValidActor(selected_token)) {
     if (game.user.isGM) {
@@ -67,7 +67,8 @@ async function processLightingRefresh() {
     await Lighting.check_all_tokens_lightingRefresh();
     inProgressLight = false;
   } else {
-    Core.log("lightingRefresh Busy");
+    // process is already underway...
+    // Core.log("lightingRefresh Busy");
   }
 }
 
@@ -76,5 +77,5 @@ function show_gm_tokenhud(selected_token, tokenHUD,html) {
 }
 
 function show_player_tokenhud(selected_token, tokenHUD,html) {
-  Lighting.show_lightLevel_box(selected_token, tokenHUD,html);
+  Lighting.show_lightLevel_player_box(selected_token, tokenHUD,html);
 }

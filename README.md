@@ -26,11 +26,16 @@ This is to allow players, or modules to use these effects to help rules determin
 - Token is only processed if of type (character, npc) and have hp > 0
 - TokenHud light box indicator is only shown if token hp > 0
 
-# Known Issues
-Tokens currently checks against placed lights, and token lighting.
+# Support
 
 Efforts are being made for tokens to respect tile overrides, and other methods.
+These may work with some degree of success/failure.
+* lights with elevations (Levels)
+* * This has been problematic to sort out, as lights are treated as cyclinders,
+* * with a top and bottom, that act as floors.  But testing results around this have been problematic.
+
 * Drawings with lighting overrides (perfect-vision)
+* * This seems to be working correctly...
 
 ## Options
 

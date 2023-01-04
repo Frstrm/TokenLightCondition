@@ -34,7 +34,23 @@ export class Lighting {
       // Determine lightLevel of the token (dark,dim,light)
       let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
 
-      const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      html.find('.right').append(divToAdd);
+    
+      divToAdd.change(async (inputbox) => {
+      });
+    }
+  }
+
+  static async show_lightLevel_player_box(selected_token, tokenHUD, html) {
+    if (selected_token.actor.system.attributes.hp.value > 0) {
+      // Show the stored value lightLevel of the token (dark,dim,light)
+      // only the GM should be processing the token light level.
+      let storedResult = selected_token.actor.getFlag('tokenlightcondition','lightLevel');
+
+      let boxString = this.lightTable[storedResult];
+
+      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
       html.find('.right').append(divToAdd);
     
       divToAdd.change(async (inputbox) => {
@@ -65,25 +81,70 @@ export class Lighting {
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
 
-    // placed drawings with light overrides (perfect-vision)
-    if (canvas.drawings.placeables) {
-      for (const placed_drawing of canvas.drawings.placeables) {
-        if (placed_drawing.document.flags['perfect-vision'].enabled) {
-          let result = Core.placedDrawingsContain(placed_drawing.document,selected_token);
-          Core.log("result:",selected_token.actor.name,result);
-
-          if (result) {
-            let drawingOverride = placed_drawing.document.flags['perfect-vision'].darkness;
-            let drawingLightLevel = this.setLightLevel(drawingOverride);
-            Core.log("return lightLevel:",drawingLightLevel);
-            if (drawingLightLevel > lightLevel) {
-              lightLevel = drawingLightLevel;
-              Core.log("set lightLevel:",lightLevel);
+    if (game.modules.get('perfect-vision')?.active) {
+      // placed drawings with light overrides (perfect-vision)
+      let drawingArray = [];
+      if (canvas.drawings.placeables) {
+        for (const placed_drawing of canvas.drawings.placeables) {
+          if (placed_drawing.document.flags['perfect-vision']) {
+            if (placed_drawing.document.flags['perfect-vision'].enabled) {
+              let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
+              if (result) {
+                drawingArray.push(placed_drawing);
+              }
+            }
+            else {
+    //          Core.log("no darkness:",placed_drawing);
             }
           }
         }
-        else {
-          Core.log("no darkness:",placed_drawing);
+        if (drawingArray.length > 0) {
+          let toplayer = null;
+          let layerZ = -1000;
+          // sort to find the top layer token is in
+          for (const drawitem of drawingArray) {
+            if (drawitem._zIndex > layerZ) {
+              layerZ = drawitem._zIndex;
+              toplayer = drawitem;
+            }
+          }
+          // read the darkness from the top layer
+          let findDarkness = false;
+          let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
+          if (drawingOverride != null) { 
+            // found darkness, don't do anything else
+          }
+          else {
+            // find a layer with inheritance that has darkness
+            let nextLayer = toplayer; 
+            let loopCount = 0;
+            while (!findDarkness) {
+              let objectID = nextLayer.document.flags['perfect-vision'].prototype;
+              if (objectID) {
+                for (const findDrawing of canvas.drawings.placeables) {
+                  if (findDrawing.id == objectID) {
+                    nextLayer = findDrawing;
+                    drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
+                    if (drawingOverride != null) {
+                      findDarkness = true;
+                    }
+                  }
+                }
+              } else {
+                findDarkness = true; // there is no more prototypes to search, exit
+              }
+              loopCount = loopCount + 1;
+              if (loopCount > 10) {
+                findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
+              }
+            }
+          }
+          if (drawingOverride != null) { // we still don't have an override, skip
+            let drawingLightLevel = this.setLightLevel(drawingOverride);
+            if (drawingLightLevel > lightLevel) {
+              lightLevel = drawingLightLevel;
+            }
+          }
         }
       }
     }
@@ -111,6 +172,7 @@ export class Lighting {
         }
       }
     }
+
     // placed tokens
     if (canvas.tokens.placeables) {
       for (const placed_token of canvas.tokens.placeables) {
@@ -185,21 +247,22 @@ export class Lighting {
     let z2 = 0;
 
     // If using Mod that adds elevation to light placements ( Levels for example )
-    if (placed_lights.document.elevation) {
-      z2 = placed_lights.document.elevation;
-     
-      if (placed_lights.t || placed_lights.b) {
-        let t = placed_lights.t;
-        let b = placed_lights.b;
+    if (game.modules.get('levels')?.active) {
+      if (placed_lights.document.flags['levels']) {
+        let t = placed_lights.document.flags['levels'].rangeTop;
+        let b = placed_lights.document.flags['levels'].rangeBottom;
 
-        if (t == 'Infinity') {t = z1;}
-        if (b == 'Infinity') {b = z1;}
+        if (t == null) {t = 1000;}
+        if (b == null) {b = -1000;}
 
-        if (z1 <= b) {z2 = b;}
-        if (z1 >= t) {z2 = t;}
+        // for levels we should treat bottom as floor that can't be seen through
+
+        if (z1 > t) {t = z1;}
+        if (z1 < (b - 5)) {return 1000;} // Treat this as a floor
+        
         // between top and bottom so, treat it as a pill
         // treat the light as being at the same level as the token for calculation
-        if ((z1 >= t) && (z1 <= t)) {
+        if ((z1 > b) && (z1 < t)) {
           z2 = z1;
         }
       }

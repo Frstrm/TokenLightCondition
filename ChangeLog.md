@@ -1,11 +1,11 @@
 ### Pending
-* Detecting Token is in a drawing with lighting overrides (perfect-vision)
+* Detecting Token is in a drawing with darkness overrides (perfect-vision)
 
 ### Version 0.3.1
 * variable assignment fix
 
 ### Version 0.3.0
-* Distance calculations now account for elevation
+* Distance calculations now account for elevation (token, lights)
 * Effects are now updated on lightingRefresh
 * Added armor around updates and token checks
 * Effects are removed if at 0 hp.

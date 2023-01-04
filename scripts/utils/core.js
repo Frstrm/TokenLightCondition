@@ -122,88 +122,63 @@ export class Core {
     }
   }
 
-  static placedDrawingsContain(placeable, token) {
-    let position = token.center
+  static isWithinDrawing(drawingShape, token) {
+    let tokenPosition = token.center
 
-    if (placeable instanceof DrawingDocument) {
-      let x = placeable.x;
-      let y = placeable.y;
-      let width = placeable.shape.width;
-      let height = placeable.shape.height;
-      let type = placeable.shape.type;
+    let x = drawingShape.x;
+    let y = drawingShape.y;
+    let width = drawingShape.shape.width;
+    let height = drawingShape.shape.height;
+    let type = drawingShape.shape.type;
 
-      if (placeable.rotation != 0) {
-        let drawing_center = [x + 0.5 * width, y + 0.5 * height];
-        position = {
-          x:
-            Math.cos((-placeable.rotation * Math.PI) / 180) * (position.x - drawing_center[0]) -
-            Math.sin((-placeable.rotation * Math.PI) / 180) * (position.y - drawing_center[1]) +
-            drawing_center[0],
-          y:
-            Math.sin((-placeable.rotation * Math.PI) / 180) * (position.x - drawing_center[0]) +
-            Math.cos((-placeable.rotation * Math.PI) / 180) * (position.y - drawing_center[1]) +
-            drawing_center[1],
-        };
-      }
-
-      if (Number.between(position.x, x, x + width) && Number.between(position.y, y, y + height)) {
-        if (type == 'r') { // rectangular
-          return true;
-        } else if (type == 'e') { // ellipse
-          return (
-            (position.x - x - 0.5 * width) ** 2 * (0.5 * height) ** 2 +
-              (position.y - y - 0.5 * height) ** 2 * (0.5 * width) ** 2 <=
-            (0.5 * width) ** 2 * (0.5 * height) ** 2
-          );
-        } else if (type == 'p' || type == 'f') { // polygon or freehand
-          let vertices = [];
-          for (let i = 0; i < placeable.shape.points.length; i++) {
-            if (i % 2) vertices.push([placeable.shape.points[i-1] + x, placeable.shape.points[i] + y])
-          }
-          let isInside = false;
-          let i = 0,
-            j = vertices.length - 1;
-          for (i, j; i < vertices.length; j = i++) {
-            if (
-              vertices[i][1] > position.y != vertices[j][1] > position.y &&
-              position.x <
-                ((vertices[j][0] - vertices[i][0]) * (position.y - vertices[i][1])) /
-                  (vertices[j][1] - vertices[i][1]) +
-                  vertices[i][0]
-            ) {
-              isInside = !isInside;
-            }
-          }
-          return isInside;
-        } else {
-          return true; // not a known drawing type, assume bounding box
-        }
-      } else {
-        return false; // outside the bounding box
-      }
+    if (drawingShape.rotation != 0) {
+      let drawing_center = [x + 0.5 * width, y + 0.5 * height];
+      tokenPosition = {
+        x:
+          Math.cos((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.x - drawing_center[0]) -
+          Math.sin((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.y - drawing_center[1]) +
+          drawing_center[0],
+        y:
+          Math.sin((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.x - drawing_center[0]) +
+          Math.cos((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.y - drawing_center[1]) +
+          drawing_center[1],
+      };
     }
 
-    // TODO other specific placeable case NoteDocument, WallDocument
-    else {
-      // Other types of placeables don't have an area that could contain the position
-      let width = placeable.w ?? placeable.document?.width ?? placeable.width;
-      if (placeable?.object) {
-        width = placeable?.object?.w ?? placeable?.object?.document?.width ?? placeable?.object?.width ?? width;
+    if (Number.between(tokenPosition.x, x, x + width) && Number.between(tokenPosition.y, y, y + height)) {
+      if (type == 'r') { // rectangular
+        return true;
+      } else if (type == 'e') { // ellipse
+        return (
+          (tokenPosition.x - x - 0.5 * width) ** 2 * (0.5 * height) ** 2 +
+            (tokenPosition.y - y - 0.5 * height) ** 2 * (0.5 * width) ** 2 <=
+          (0.5 * width) ** 2 * (0.5 * height) ** 2
+        );
+      } else if (type == 'p' || type == 'f') { // polygon or freehand
+        let vertices = [];
+        for (let i = 0; i < drawingShape.shape.points.length; i++) {
+          if (i % 2) vertices.push([drawingShape.shape.points[i-1] + x, drawingShape.shape.points[i] + y])
+        }
+        let isInside = false;
+        let i = 0,
+          j = vertices.length - 1;
+        for (i, j; i < vertices.length; j = i++) {
+          if (
+            vertices[i][1] > tokenPosition.y != vertices[j][1] > tokenPosition.y &&
+            tokenPosition.x <
+              ((vertices[j][0] - vertices[i][0]) * (tokenPosition.y - vertices[i][1])) /
+                (vertices[j][1] - vertices[i][1]) +
+                vertices[i][0]
+          ) {
+            isInside = !isInside;
+          }
+        }
+        return isInside;
+      } else {
+        return true; // not a known drawing type, assume bounding box
       }
-      let height = placeable.h ?? placeable.document?.height ?? placeable.height;
-      if (placeable?.object) {
-        height = placeable?.object?.h ?? placeable?.object?.document?.height ?? placeable?.object?.height ?? height;
-      }
-      let x = placeable.x ?? placeable?.document?.x;
-      if (placeable?.object) {
-        x = placeable?.object?.x ?? placeable?.object?.document?.x ?? x;
-      }
-      let y = placeable?.y ?? placeable?.document?.y;
-      if (placeable?.object) {
-        y = placeable?.object?.y ?? placeable?.object?.document?.y ?? y;
-      }
-      return Number.between(position.x, x, x + width) && Number.between(position.y, y, y + height);
+    } else {
+      return false; // outside the bounding box
     }
   }
-
 }
