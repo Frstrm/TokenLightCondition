@@ -93,11 +93,19 @@ export class Core {
     let elevated_distance = 0;
     let gridSize = canvas.grid.size;
     let gridDistance = canvas.scene.grid.distance;
+    
+    const x1 = selected_token.center.x;
+    const y1 = selected_token.center.y;
+    const z1 = (selected_token.document.elevation / gridDistance) * gridSize;
+
+    const x2 = placed_token.center.x;
+    const y2 = placed_token.center.y;
+    const z2 = (placed_token.document.elevation / gridDistance) * gridSize;
 
     // Measure grid distance with elevation
-    let e1 = Math.abs((selected_token.center.x - placed_token.center.x));
-    let e2 = Math.abs((selected_token.center.y - placed_token.center.y));
-    let e3 = Math.abs((((selected_token.document.elevation / gridDistance) - (placed_token.document.elevation / gridDistance)) * gridSize));
+    let e1 = Math.abs(x1 - x2);
+    let e2 = Math.abs(y1 - y2);
+    let e3 = Math.abs(z1 - z2);
     let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
     elevated_distance = (distance / gridSize) * gridDistance;;
@@ -113,6 +121,64 @@ export class Core {
       return true; // found collision
     }
   }
-  
-}
 
+  static isWithinDrawing(drawingShape, token) {
+    let tokenPosition = token.center
+
+    let x = drawingShape.x;
+    let y = drawingShape.y;
+    let width = drawingShape.shape.width;
+    let height = drawingShape.shape.height;
+    let type = drawingShape.shape.type;
+
+    if (drawingShape.rotation != 0) {
+      let drawing_center = [x + 0.5 * width, y + 0.5 * height];
+      tokenPosition = {
+        x:
+          Math.cos((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.x - drawing_center[0]) -
+          Math.sin((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.y - drawing_center[1]) +
+          drawing_center[0],
+        y:
+          Math.sin((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.x - drawing_center[0]) +
+          Math.cos((-drawingShape.rotation * Math.PI) / 180) * (tokenPosition.y - drawing_center[1]) +
+          drawing_center[1],
+      };
+    }
+
+    if (Number.between(tokenPosition.x, x, x + width) && Number.between(tokenPosition.y, y, y + height)) {
+      if (type == 'r') { // rectangular
+        return true;
+      } else if (type == 'e') { // ellipse
+        return (
+          (tokenPosition.x - x - 0.5 * width) ** 2 * (0.5 * height) ** 2 +
+            (tokenPosition.y - y - 0.5 * height) ** 2 * (0.5 * width) ** 2 <=
+          (0.5 * width) ** 2 * (0.5 * height) ** 2
+        );
+      } else if (type == 'p' || type == 'f') { // polygon or freehand
+        let vertices = [];
+        for (let i = 0; i < drawingShape.shape.points.length; i++) {
+          if (i % 2) vertices.push([drawingShape.shape.points[i-1] + x, drawingShape.shape.points[i] + y])
+        }
+        let isInside = false;
+        let i = 0,
+          j = vertices.length - 1;
+        for (i, j; i < vertices.length; j = i++) {
+          if (
+            vertices[i][1] > tokenPosition.y != vertices[j][1] > tokenPosition.y &&
+            tokenPosition.x <
+              ((vertices[j][0] - vertices[i][0]) * (tokenPosition.y - vertices[i][1])) /
+                (vertices[j][1] - vertices[i][1]) +
+                vertices[i][0]
+          ) {
+            isInside = !isInside;
+          }
+        }
+        return isInside;
+      } else {
+        return true; // not a known drawing type, assume bounding box
+      }
+    } else {
+      return false; // outside the bounding box
+    }
+  }
+}

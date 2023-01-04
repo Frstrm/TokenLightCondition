@@ -17,12 +17,40 @@ export class Lighting {
     }
   }
 
+  static setLightLevel(darknessLevel) {
+    if (darknessLevel >= 0 && darknessLevel < 0.5) {
+      return 2;
+    }
+    if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
+      return 1;
+    }
+    if (darknessLevel >= 0.75 && darknessLevel <= 1) {
+      return 0;
+    }
+  }
+
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
     if (selected_token.actor.system.attributes.hp.value > 0) {
       // Determine lightLevel of the token (dark,dim,light)
       let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
 
-      const divToAdd = $('<input disabled size="3" id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+      html.find('.right').append(divToAdd);
+    
+      divToAdd.change(async (inputbox) => {
+      });
+    }
+  }
+
+  static async show_lightLevel_player_box(selected_token, tokenHUD, html) {
+    if (selected_token.actor.system.attributes.hp.value > 0) {
+      // Show the stored value lightLevel of the token (dark,dim,light)
+      // only the GM should be processing the token light level.
+      let storedResult = selected_token.actor.getFlag('tokenlightcondition','lightLevel');
+
+      let boxString = this.lightTable[storedResult];
+
+      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
       html.find('.right').append(divToAdd);
     
       divToAdd.change(async (inputbox) => {
@@ -52,22 +80,91 @@ export class Lighting {
 
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
+
+    if (game.modules.get('perfect-vision')?.active) {
+      // placed drawings with light overrides (perfect-vision)
+      let drawingArray = [];
+      if (canvas.drawings.placeables) {
+        for (const placed_drawing of canvas.drawings.placeables) {
+          if (placed_drawing.document.flags['perfect-vision']) {
+            if (placed_drawing.document.flags['perfect-vision'].enabled) {
+              let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
+              if (result) {
+                drawingArray.push(placed_drawing);
+              }
+            }
+            else {
+    //          Core.log("no darkness:",placed_drawing);
+            }
+          }
+        }
+        if (drawingArray.length > 0) {
+          let toplayer = null;
+          let layerZ = -1000;
+          // sort to find the top layer token is in
+          for (const drawitem of drawingArray) {
+            if (drawitem._zIndex > layerZ) {
+              layerZ = drawitem._zIndex;
+              toplayer = drawitem;
+            }
+          }
+          // read the darkness from the top layer
+          let findDarkness = false;
+          let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
+          if (drawingOverride != null) { 
+            // found darkness, don't do anything else
+          }
+          else {
+            // find a layer with inheritance that has darkness
+            let nextLayer = toplayer; 
+            let loopCount = 0;
+            while (!findDarkness) {
+              let objectID = nextLayer.document.flags['perfect-vision'].prototype;
+              if (objectID) {
+                for (const findDrawing of canvas.drawings.placeables) {
+                  if (findDrawing.id == objectID) {
+                    nextLayer = findDrawing;
+                    drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
+                    if (drawingOverride != null) {
+                      findDarkness = true;
+                    }
+                  }
+                }
+              } else {
+                findDarkness = true; // there is no more prototypes to search, exit
+              }
+              loopCount = loopCount + 1;
+              if (loopCount > 10) {
+                findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
+              }
+            }
+          }
+          if (drawingOverride != null) { // we still don't have an override, skip
+            let drawingLightLevel = this.setLightLevel(drawingOverride);
+            if (drawingLightLevel > lightLevel) {
+              lightLevel = drawingLightLevel;
+            }
+          }
+        }
+      }
+    }
+
     // placed lights
     if (canvas.lighting.objects) {
-      for (const placed_lights of canvas.lighting.objects.children) {
-        if (placed_lights.source.active == true) {
-          let tokenDistance = this.get_calculated_light_distance(selected_token, placed_lights);
-          let foundWall = Core.get_wall_collision(selected_token, placed_lights);
+      for (const placed_light of canvas.lighting.objects.children) {
+        if (placed_light.source.active == true) {
+          let tokenDistance = this.get_calculated_light_distance(selected_token, placed_light);
+          let foundWall = Core.get_wall_collision(selected_token, placed_light);
           if (!foundWall) {
             // check for dim
-            if (tokenDistance <= placed_lights.document.config.dim) {
-              if ((lightLevel < 1) && (placed_lights.document.config.dim > 0)) {
+            if (tokenDistance <= placed_light.document.config.dim) {
+              if ((lightLevel < 1) && (placed_light.document.config.dim > 0)) {
                 lightLevel = 1;
               }
             }
             // check for bright
-            if (tokenDistance <= placed_lights.document.config.bright) {
-              if ((lightLevel < 2) && (placed_lights.document.config.bright > 0)) {
+            if (tokenDistance <= placed_light.document.config.bright) {
+              if ((lightLevel < 2) && (placed_light.document.config.bright > 0)) {
                 lightLevel = 2;
               }
             }
@@ -75,23 +172,24 @@ export class Lighting {
         }
       }
     }
+
     // placed tokens
     if (canvas.tokens.placeables) {
-      for (const placed_tokens of canvas.tokens.placeables) {
-        if (placed_tokens.actor) {
-          if (placed_tokens.light.active == true) {
-            let tokenDistance = Core.get_calculated_distance(selected_token, placed_tokens);
-            let foundWall = Core.get_wall_collision(selected_token, placed_tokens);
+      for (const placed_token of canvas.tokens.placeables) {
+        if (placed_token.actor) {
+          if (placed_token.light.active == true) {
+            let tokenDistance = Core.get_calculated_distance(selected_token, placed_token);
+            let foundWall = Core.get_wall_collision(selected_token, placed_token);
             if (!foundWall) {
               // check for dim
-              if (tokenDistance <= placed_tokens.document.light.dim) {
-                if ((lightLevel < 1) && (placed_tokens.document.light.dim > 0)) {
+              if (tokenDistance <= placed_token.document.light.dim) {
+                if ((lightLevel < 1) && (placed_token.document.light.dim > 0)) {
                   lightLevel = 1;
                 }
               }
               // check for bright
-              if (tokenDistance <= placed_tokens.document.light.bright) {
-                if ((lightLevel < 2) && (placed_tokens.document.light.bright > 0)) {
+              if (tokenDistance <= placed_token.document.light.bright) {
+                if ((lightLevel < 2) && (placed_token.document.light.bright > 0)) {
                   lightLevel = 2;
                 }
               }
@@ -137,12 +235,47 @@ export class Lighting {
     let elevated_distance = 0;
     let gridSize = canvas.grid.size;
     let gridDistance = canvas.scene.grid.distance;
+    let z1Actual = 0;
+    let z2Actual = 0;
 
+    const x1 = selected_token.center.x;
+    const y1 = selected_token.center.y;
+    let z1 = selected_token.document.elevation;
+
+    const x2 = placed_lights.center.x;
+    const y2 = placed_lights.center.y;
+    let z2 = 0;
+
+    // If using Mod that adds elevation to light placements ( Levels for example )
+    if (game.modules.get('levels')?.active) {
+      if (placed_lights.document.flags['levels']) {
+        let t = placed_lights.document.flags['levels'].rangeTop;
+        let b = placed_lights.document.flags['levels'].rangeBottom;
+
+        if (t == null) {t = 1000;}
+        if (b == null) {b = -1000;}
+
+        // for levels we should treat bottom as floor that can't be seen through
+
+        if (z1 > t) {t = z1;}
+        if (z1 < (b - 5)) {return 1000;} // Treat this as a floor
+        
+        // between top and bottom so, treat it as a pill
+        // treat the light as being at the same level as the token for calculation
+        if ((z1 > b) && (z1 < t)) {
+          z2 = z1;
+        }
+      }
+    }
+
+    // convert elevation (ft) to canvas grid values
+    z1Actual =  (z1 / gridDistance) * gridSize;
+    z2Actual = (z2 / gridDistance) * gridSize;
+    
     // Measure grid distance with elevation
-    let e1 = Math.abs((selected_token.center.x - placed_lights.document.x));
-    let e2 = Math.abs((selected_token.center.y - placed_lights.document.y));
-    // lights don't have elevation?
-    let e3 = Math.abs(((selected_token.document.elevation/gridDistance)* gridSize));
+    let e1 = Math.abs(x1 - x2);
+    let e2 = Math.abs(y1 - y2);
+    let e3 = Math.abs(z1Actual - z2);
     let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
     elevated_distance = (distance / gridSize) * gridDistance;;

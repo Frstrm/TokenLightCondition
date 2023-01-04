@@ -6,7 +6,6 @@ import { Effects } from './utils/effects.js';
 // ******************************************
 // Globals
 // ******************************************
-let canvasDarknessLevel = 'dark';
 let inProgressLight = false;
 let moduleState = false;
 
@@ -25,8 +24,6 @@ Hooks.once('ready', () => {
   console.log(`tokenlightcondition | Ready ${moduleVersion}`);
   moduleState = true;
 
-  canvasDarknessLevel = Lighting.setDarknessThreshold(canvas.darknessLevel);
-
   Effects.initializeEffects();
 });
 
@@ -44,7 +41,7 @@ Hooks.on('refreshToken', (token) => {
   }
 })
 
-Hooks.on('renderTokenHUD', (tokenHUD,html,app) => {
+Hooks.on('renderTokenHUD', (tokenHUD, html, app) => {
   let selected_token = Core.find_selected_token(tokenHUD);
   if (Core.isValidActor(selected_token)) {
     if (game.user.isGM) {
@@ -67,13 +64,11 @@ Hooks.on('renderSettingsConfig', (app, html, data) => {
 async function processLightingRefresh() {
   if (!inProgressLight) {
     inProgressLight = true;
-    // has the light level change of the scene crossed a threshold?
-    const testLight = await Lighting.setDarknessThreshold(canvas.darknessLevel);
     await Lighting.check_all_tokens_lightingRefresh();
-    canvasDarknessLevel = testLight;
     inProgressLight = false;
   } else {
-    Core.log("lightingRefresh Busy");
+    // process is already underway...
+    // Core.log("lightingRefresh Busy");
   }
 }
 
@@ -82,5 +77,5 @@ function show_gm_tokenhud(selected_token, tokenHUD,html) {
 }
 
 function show_player_tokenhud(selected_token, tokenHUD,html) {
-  Lighting.show_lightLevel_box(selected_token, tokenHUD,html);
+  Lighting.show_lightLevel_player_box(selected_token, tokenHUD,html);
 }
