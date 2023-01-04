@@ -1,5 +1,6 @@
-### Pending
+### Version 0.3.2
 * Detecting Token is in a drawing with darkness overrides (perfect-vision)
+* Attempt to account for light elevation (levels)
 
 ### Version 0.3.1
 * variable assignment fix
