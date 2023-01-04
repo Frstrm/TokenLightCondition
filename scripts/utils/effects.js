@@ -53,11 +53,11 @@ export class Effects {
     const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
 
     if (dim) {
-      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
+//      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
       selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
     }
     if (dark) {
-      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
+//      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
       selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
     }
   }
