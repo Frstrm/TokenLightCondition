@@ -1,4 +1,4 @@
-### Pending
+### Version 0.3.3
 * Add Option to enable/disable the TokenHud display.
 
 ### Version 0.3.2

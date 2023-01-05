@@ -48,7 +48,7 @@ Sets the level of console used for logging:
 </ul>
 
 ### **Show TokenHud**
-Determines if the display is shwon on the TokenHud
+Enables or Disables the display of the light condition on the TokenHud.
 - Adds a token Hud element to selected token (right-click the token):
 -   Hud indicator - ( DRK, DIM, BRT )
 
