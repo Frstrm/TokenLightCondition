@@ -1,3 +1,6 @@
+### Version 0.3.4
+* Potential bugfix for effect not getting removed.
+
 ### Version 0.3.3
 * Add Option to enable/disable the TokenHud display.
 
