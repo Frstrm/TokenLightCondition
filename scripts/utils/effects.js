@@ -54,11 +54,11 @@ export class Effects {
 
     if (dim) {
 //      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
-      selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
+      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
     }
     if (dark) {
 //      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
-      selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
+      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
     }
   }
 
