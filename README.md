@@ -61,7 +61,7 @@ Choose which source or application the effects are generated from.
   <li>Combat Utility Belt (CUB)</li>
 </ul>
 
-None means there are token effects, but the token Hud will still work.
+None means there no effects placed on tokens, but the token Hud will still work.
 
 CUB option is only available if both Dim AND Dark conditions exist in the Lab.
 
