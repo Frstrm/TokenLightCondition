@@ -1,3 +1,6 @@
+### Pending
+* Add Option to enable/disable the TokenHud display.
+
 ### Version 0.3.2
 * Detecting Token is in a drawing with darkness overrides (perfect-vision)
 * Attempt to account for light elevation (levels)
