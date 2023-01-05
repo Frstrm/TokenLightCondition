@@ -47,6 +47,11 @@ Sets the level of console used for logging:
   <li>Log</li>
 </ul>
 
+### **Show TokenHud**
+Determines if the display is shwon on the TokenHud
+- Adds a token Hud element to selected token (right-click the token):
+-   Hud indicator - ( DRK, DIM, BRT )
+
 ### **Source for lighting effect**
 Choose which source or application the effects are generated from.
 <ul>

@@ -13,11 +13,20 @@ Hooks.once('ready', () => {
     config: true,
     type: String,
     choices: {
-      'none': 'No logging',
-      'debug': 'Debug level',
-      'log': 'Log level',
+      'none': game.i18n.localize("tokenlightcond-config-logLevel-none-choice"),
+      'debug': game.i18n.localize("tokenlightcond-config-logLevel-debuglevel-choice"),
+      'log': game.i18n.localize("tokenlightcond-config-logLevel-loglevel-choice")
     },
     default: 'none'
+  });
+
+  game.settings.register('tokenlightcondition', 'showTokenHud', {
+    name: game.i18n.localize("tokenlightcond-config-showTokenHud-name"),
+    hint: game.i18n.localize("tokenlightcond-config-showTokenHud-hint"),
+    scope: 'client',
+    config: true,
+    default: true,
+    type: Boolean,
   });
 
   let choices = {
