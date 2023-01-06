@@ -14,9 +14,14 @@
     "maximum": "10"
   },
   "minimumCoreVersion": "10",
-  "system": [
-    "dnd5e"
-  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system"
+      }
+    ]
+  },
   "socket": true,
   "esmodules": [
     "./scripts/config.js",
