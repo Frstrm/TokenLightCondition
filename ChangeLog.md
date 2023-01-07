@@ -1,7 +1,9 @@
-### Pending
+### Version 0.4.0
 * Optimize find_token_lighting workflow
 * * Reduce wallcollision checks until needed.
 * * Opt out of further checks if Bright is determined.
+* * ( This should improve overall performance )
+* BugFix: 13: Cleaned up module.json: links, and system usage
 
 ### Version 0.3.4
 * Potential bugfix for effect not getting removed.
