@@ -47,6 +47,11 @@ Sets the level of console used for logging:
   <li>Log</li>
 </ul>
 
+### **Show TokenHud**
+Enables or Disables the display of the light condition on the TokenHud.
+- Adds a token Hud element to selected token (right-click the token):
+-   Hud indicator - ( DRK, DIM, BRT )
+
 ### **Source for lighting effect**
 Choose which source or application the effects are generated from.
 <ul>
@@ -56,7 +61,7 @@ Choose which source or application the effects are generated from.
   <li>Combat Utility Belt (CUB)</li>
 </ul>
 
-None means there are token effects, but the token Hud will still work.
+None means there no effects placed on tokens, but the token Hud will still work.
 
 CUB option is only available if both Dim AND Dark conditions exist in the Lab.
 

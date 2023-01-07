@@ -42,19 +42,22 @@ Hooks.on('refreshToken', (token) => {
 })
 
 Hooks.on('renderTokenHUD', (tokenHUD, html, app) => {
-  let selected_token = Core.find_selected_token(tokenHUD);
-  if (Core.isValidActor(selected_token)) {
-    if (game.user.isGM) {
-      show_gm_tokenhud(selected_token, tokenHUD,html);
-    } else {
-      show_player_tokenhud(selected_token, tokenHUD,html);
+  const showHud = game.settings.get('tokenlightcondition', 'showTokenHud');
+  if (showHud) {
+    let selected_token = Core.find_selected_token(tokenHUD);
+    if (Core.isValidActor(selected_token)) {
+      if (game.user.isGM) {
+        show_gm_tokenhud(selected_token, tokenHUD,html);
+      } else {
+        show_player_tokenhud(selected_token, tokenHUD,html);
+      }
     }
   }
 });
 
 Hooks.on('renderSettingsConfig', (app, html, data) => {
   $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-debug')).insertBefore($('[name="tokenlightcondition.logLevel"]').parents('div.form-group:first'));
-  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-general')).insertBefore($('[name="tokenlightcondition.effectSource"]').parents('div.form-group:first'));
+  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-general')).insertBefore($('[name="tokenlightcondition.showTokenHud"]').parents('div.form-group:first'));
 });
 
 // ******************************************
