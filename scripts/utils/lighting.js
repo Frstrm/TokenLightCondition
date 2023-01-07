@@ -94,10 +94,11 @@ export class Lighting {
               }
             }
             else {
-    //          Core.log("no darkness:",placed_drawing);
+              // drawing is not enabled
             }
           }
         }
+        // if a drawing is found, or if there are multiple...
         if (drawingArray.length > 0) {
           let toplayer = null;
           let layerZ = -1000;
@@ -149,23 +150,30 @@ export class Lighting {
       }
     }
 
-    // placed lights
-    if (canvas.lighting.objects) {
-      for (const placed_light of canvas.lighting.objects.children) {
-        if (placed_light.source.active == true) {
-          let tokenDistance = this.get_calculated_light_distance(selected_token, placed_light);
-          let foundWall = Core.get_wall_collision(selected_token, placed_light);
-          if (!foundWall) {
-            // check for dim
-            if (tokenDistance <= placed_light.document.config.dim) {
-              if ((lightLevel < 1) && (placed_light.document.config.dim > 0)) {
-                lightLevel = 1;
-              }
-            }
-            // check for bright
-            if (tokenDistance <= placed_light.document.config.bright) {
-              if ((lightLevel < 2) && (placed_light.document.config.bright > 0)) {
-                lightLevel = 2;
+    if (lightLevel < 2) {
+      // placed lights
+      if (canvas.lighting.objects) {
+        for (const placed_light of canvas.lighting.objects.children) {
+          if (placed_light.source.active == true) {
+            let tokenDistance = this.get_calculated_light_distance(selected_token, placed_light);
+            let lightDimDis = placed_light.document.config.dim;
+            let lightBrtDis = placed_light.document.config.bright;
+
+            if (tokenDistance <= lightDimDis || tokenDistance <= lightBrtDis) {
+              let foundWall = Core.get_wall_collision(selected_token, placed_light);
+              if (!foundWall) {
+                // check for dim
+                if (tokenDistance <= lightDimDis) {
+                  if ((lightLevel < 1) && (lightDimDis > 0)) {
+                    lightLevel = 1;
+                  }
+                }
+                // check for bright
+                if (tokenDistance <= lightBrtDis) {
+                  if ((lightLevel < 2) && (lightBrtDis > 0)) {
+                    lightLevel = 2;
+                  }
+                }
               }
             }
           }
@@ -173,24 +181,31 @@ export class Lighting {
       }
     }
 
-    // placed tokens
-    if (canvas.tokens.placeables) {
-      for (const placed_token of canvas.tokens.placeables) {
-        if (placed_token.actor) {
-          if (placed_token.light.active == true) {
-            let tokenDistance = Core.get_calculated_distance(selected_token, placed_token);
-            let foundWall = Core.get_wall_collision(selected_token, placed_token);
-            if (!foundWall) {
-              // check for dim
-              if (tokenDistance <= placed_token.document.light.dim) {
-                if ((lightLevel < 1) && (placed_token.document.light.dim > 0)) {
-                  lightLevel = 1;
-                }
-              }
-              // check for bright
-              if (tokenDistance <= placed_token.document.light.bright) {
-                if ((lightLevel < 2) && (placed_token.document.light.bright > 0)) {
-                  lightLevel = 2;
+    if (lightLevel < 2) {
+      // placed tokens
+      if (canvas.tokens.placeables) {
+        for (const placed_token of canvas.tokens.placeables) {
+          if (placed_token.actor) {
+            if (placed_token.light.active == true) {
+              let tokenDistance = Core.get_calculated_distance(selected_token, placed_token);
+              let tokenDimDis = placed_token.document.light.dim;
+              let tokenBrtDis = placed_token.document.light.bright;
+              
+              if (tokenDistance <= tokenDimDis || tokenDistance <= tokenBrtDis) {
+                let foundWall = Core.get_wall_collision(selected_token, placed_token);
+                if (!foundWall) {
+                  // check for within dim
+                  if (tokenDistance <= tokenDimDis) {
+                    if ((lightLevel < 1) && (tokenDimDis > 0)) {
+                      lightLevel = 1;
+                    }
+                  }
+                  // check for within bright
+                  if (tokenDistance <= tokenBrtDis) {
+                    if ((lightLevel < 2) && (tokenBrtDis > 0)) {
+                      lightLevel = 2;
+                    }
+                  }
                 }
               }
             }
