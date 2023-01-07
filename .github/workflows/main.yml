@@ -29,5 +29,5 @@ jobs:
           draft: false
           prerelease: false
           token: ${{secrets.GITHUB_TOKEN}}
-          artifacts: './TokenLightCondition.zip, ./module.json, .ChangeLog.md, .README.md'
+          artifacts: './TokenLightCondition.zip, ./module.json'
           tag: ${{ steps.get-version.outputs.version }}
