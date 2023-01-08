@@ -27,16 +27,38 @@ Hooks.once('ready', () => {
   Effects.initializeEffects();
 });
 
+Hooks.on('getSceneControlButtons', controls => {
+  if (game.user.isGM) {
+    const lightingControls = controls.find(c => c.name === 'lighting');
+    if (lightingControls) {
+      const index = lightingControls.tools.findIndex(t => t.name === 'clear');
+
+      lightingControls.tools.splice(index + 1, 0, {
+          name: 'tokenlightcontrol.enable',
+          title: 'Toggle Token Light Condition',
+          icon: 'fa-solid fa-eye-low-vision',
+          toggle: true,
+          active: !!game.settings.get('tokenlightcondition', 'enable'),
+          onClick: (toggled) => Core.toggleTokenLightCond(toggled)
+      });
+    }
+  }
+});
+
 Hooks.on('lightingRefresh', (data) => {
   if (game.user.isGM) {
-    processLightingRefresh();
+    if (Core.checkModuleState()) {
+      processLightingRefresh();
+    }
   }
 });
 
 Hooks.on('refreshToken', (token) => {
   if (moduleState) {
     if (game.user.isGM) {
-      Core.isValidActor(token);
+      if (Core.checkModuleState()) {
+        Core.isValidActor(token);
+      }
     }
   }
 })
@@ -44,12 +66,14 @@ Hooks.on('refreshToken', (token) => {
 Hooks.on('renderTokenHUD', (tokenHUD, html, app) => {
   const showHud = game.settings.get('tokenlightcondition', 'showTokenHud');
   if (showHud) {
-    let selected_token = Core.find_selected_token(tokenHUD);
-    if (Core.isValidActor(selected_token)) {
-      if (game.user.isGM) {
-        show_gm_tokenhud(selected_token, tokenHUD,html);
-      } else {
-        show_player_tokenhud(selected_token, tokenHUD,html);
+    if (Core.checkModuleState()) {
+      let selected_token = Core.find_selected_token(tokenHUD);
+      if (Core.isValidActor(selected_token)) {
+        if (game.user.isGM) {
+          show_gm_tokenhud(selected_token, tokenHUD,html);
+        } else {
+          show_player_tokenhud(selected_token, tokenHUD,html);
+        }
       }
     }
   }
