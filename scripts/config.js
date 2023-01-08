@@ -1,5 +1,28 @@
 import { Core } from './utils/core.js';
 
+Hooks.once('setup', () => {
+
+ game.settings.register('tokenlightcondition', 'enable', {
+    name: 'tokenlightcondition.enable',
+    scope: 'world',
+    config: false,
+    type: Boolean,
+    default: true,
+    onChange: value => {
+        if (!canvas.ready || !game.user.isGM) {
+            Core.log('config OnChange');
+            return;
+        }
+
+        if (ui.controls.control.name === 'lighting') {
+            ui.controls.control.tools.find(tool => tool.name === 'tokenlightcontrol.enable').active = value;
+            ui.controls.render();
+        }
+    }
+  });
+
+})
+
 Hooks.once('ready', () => {
 
   const module = game.modules.get('tokenlightcondition');

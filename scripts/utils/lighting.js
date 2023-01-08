@@ -8,25 +8,19 @@ export class Lighting {
   static async setDarknessThreshold(darknessLevel) {
     if (darknessLevel >= 0 && darknessLevel < 0.5) {
       return 'bright';
-    }
-    if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
+    } else if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
       return 'dim';
     }
-    if (darknessLevel >= 0.75 && darknessLevel <= 1) {
-      return 'dark';
-    }
+    return 'dark';
   }
 
   static setLightLevel(darknessLevel) {
     if (darknessLevel >= 0 && darknessLevel < 0.5) {
       return 2;
-    }
-    if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
+    } else if (darknessLevel >= 0.5 && darknessLevel < 0.75) {
       return 1;
     }
-    if (darknessLevel >= 0.75 && darknessLevel <= 1) {
-      return 0;
-    }
+    return 0;
   }
 
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
@@ -222,7 +216,7 @@ export class Lighting {
         let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
         if (!dark) {
           await Effects.clearEffects(selected_token);
-          Effects.addDark(selected_token);
+          await Effects.addDark(selected_token);
         }
         break;
       case 1:
@@ -230,7 +224,7 @@ export class Lighting {
         let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
         if (!dim) {
           await Effects.clearEffects(selected_token);
-          Effects.addDim(selected_token);
+          await Effects.addDim(selected_token);
         }
         break;
       case 2:

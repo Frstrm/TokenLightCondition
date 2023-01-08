@@ -25,6 +25,7 @@ This is to allow players, or modules to use these effects to help rules determin
 - Tokens will be updated on drop in scene.
 - Token is only processed if of type (character, npc) and have hp > 0
 - TokenHud light box indicator is only shown if token hp > 0
+- Lighting Control that can enable/disable Token Light Condition use.
 
 # Support
 
