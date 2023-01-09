@@ -1,3 +1,6 @@
+### Pending
+* Check on light placements now account for Angles and Rotation.
+
 ### Version 0.5.0
 * Add icon to Lighting Controls that enable/disables Token Light Condition
 * * On Enable (default): a pass will be made on tokens to check for needed effects

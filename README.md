@@ -40,7 +40,6 @@ If you are switching TO enabled, give the module a moment to process all the via
 ![enabled-processing](https://user-images.githubusercontent.com/46358673/211184079-1d016bc0-bafb-4840-a004-baf0975e15c1.png)
 
 When Disabled, the module will process the tokens and Remove any Dim/Dark effects currently in use.
-
 ![disabled-removing](https://user-images.githubusercontent.com/46358673/211184103-8daad474-f02b-4329-a5f9-f027f829d7a7.png)
 ![disabled-done](https://user-images.githubusercontent.com/46358673/211184108-555ec22d-5414-466f-82c5-a7fb7ccf2502.png)
 
