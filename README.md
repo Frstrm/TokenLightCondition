@@ -10,6 +10,7 @@
 A module for <a href="https://foundryvtt.com/">FoundryVTT</a> that modifies token effects based on lighting conditions.
 
 ![effect-transitions](https://user-images.githubusercontent.com/46358673/211183803-89dc8242-3574-42bb-be45-ce593e443fc9.gif)
+![effect-angle-transitions](https://user-images.githubusercontent.com/46358673/211233941-030719db-2aa4-4ba4-b1ed-fade63e44a80.gif)
 
 # Purpose
 
