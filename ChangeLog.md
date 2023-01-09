@@ -1,4 +1,4 @@
-### Pending
+### Version 0.5.1
 * Check on light placements now account for Angles and Rotation.
 
 ### Version 0.5.0
