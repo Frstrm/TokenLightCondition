@@ -154,18 +154,42 @@ export class Lighting {
             let lightBrtDis = placed_light.document.config.bright;
 
             if (tokenDistance <= lightDimDis || tokenDistance <= lightBrtDis) {
-              let foundWall = Core.get_wall_collision(selected_token, placed_light);
-              if (!foundWall) {
-                // check for dim
-                if (tokenDistance <= lightDimDis) {
-                  if ((lightLevel < 1) && (lightDimDis > 0)) {
-                    lightLevel = 1;
-                  }
+              // If light has a reduced angle and possibly rotated...
+              let inLight = true;
+              if (placed_light.document.config.angle < 360) {
+                let lightAngle = placed_light.document.config.angle;
+                let lightRotation = placed_light.document.rotation;
+                let angle = this.get_calculated_light_angle(selected_token, placed_light);
+
+                // convert from +180/-180
+                if (angle < 0) {angle += 360;}
+
+                // find the difference between token angle and light rotation
+                let adjustedAngle = Math.abs(angle - lightRotation);
+                if (adjustedAngle > 180) {adjustedAngle = 360 - adjustedAngle;}
+                
+                // check if token is in the light wedge or not
+                if (adjustedAngle > (lightAngle /2)) {
+                  inLight = false;
                 }
-                // check for bright
-                if (tokenDistance <= lightBrtDis) {
-                  if ((lightLevel < 2) && (lightBrtDis > 0)) {
-                    lightLevel = 2;
+              }
+
+              // If the token is found to be within a potential light...
+              if (inLight) {
+                let foundWall = Core.get_wall_collision(selected_token, placed_light);
+
+                if (!foundWall) {
+                  // check for dim
+                  if (tokenDistance <= lightDimDis) {
+                    if ((lightLevel < 1) && (lightDimDis > 0)) {
+                      lightLevel = 1;
+                    }
+                  }
+                  // check for bright
+                  if (tokenDistance <= lightBrtDis) {
+                    if ((lightLevel < 2) && (lightBrtDis > 0)) {
+                      lightLevel = 2;
+                    }
                   }
                 }
               }
@@ -290,5 +314,20 @@ export class Lighting {
     elevated_distance = (distance / gridSize) * gridDistance;;
 
     return elevated_distance;
+  }
+
+  static get_calculated_light_angle(selected_token, placed_lights) {
+    const a1 = placed_lights.center.x;
+    const a2 = placed_lights.center.y;
+    const b1 = selected_token.center.x;
+    const b2 = selected_token.center.y;
+
+    if (selected_token.center == placed_lights.center) {
+      return 0;
+    }
+
+    let angle = Math.atan2(a1-b1, b2-a2) * ( 180 / Math.PI);
+
+    return angle;
   }
 }
