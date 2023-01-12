@@ -9,8 +9,12 @@
 
 A module for <a href="https://foundryvtt.com/">FoundryVTT</a> that modifies token effects based on lighting conditions.
 
+<br>Normal light placement</br>
 ![effect-transitions](https://user-images.githubusercontent.com/46358673/211183803-89dc8242-3574-42bb-be45-ce593e443fc9.gif)
+<br>Light placement with rotation and angle defined</br>
 ![effect-angle-transitions](https://user-images.githubusercontent.com/46358673/211233941-030719db-2aa4-4ba4-b1ed-fade63e44a80.gif)
+<br>Token light with rotation and angle.</br>
+![effect-token-angle](https://user-images.githubusercontent.com/46358673/211961280-00610dcc-edab-4622-a01e-39f6b03f2c2b.gif)
 
 # Purpose
 
