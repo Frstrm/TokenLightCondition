@@ -210,18 +210,43 @@ export class Lighting {
               let tokenBrtDis = placed_token.document.light.bright;
               
               if (tokenDistance <= tokenDimDis || tokenDistance <= tokenBrtDis) {
-                let foundWall = Core.get_wall_collision(selected_token, placed_token);
-                if (!foundWall) {
-                  // check for within dim
-                  if (tokenDistance <= tokenDimDis) {
-                    if ((lightLevel < 1) && (tokenDimDis > 0)) {
-                      lightLevel = 1;
-                    }
+                let inLight = true;
+                if (placed_token.light.data.angle < 360) {
+                  let lightAngle = placed_token.light.data.angle;
+                  let lightRotation = placed_token.light.data.rotation;
+                  let angle = this.get_calculated_light_angle(selected_token, placed_token);
+                  // convert from +180/-180
+                  if (angle < 0) {angle += 360;}
+  
+                  // find the difference between token angle and light rotation
+                  let adjustedAngle = Math.abs(angle - lightRotation);
+                  if (adjustedAngle > 180) {adjustedAngle = 360 - adjustedAngle;}
+                  
+                  // check if token is in the light wedge or not
+                  if (adjustedAngle > (lightAngle /2)) {
+                    inLight = false;
                   }
-                  // check for within bright
-                  if (tokenDistance <= tokenBrtDis) {
-                    if ((lightLevel < 2) && (tokenBrtDis > 0)) {
-                      lightLevel = 2;
+
+                  // override if the source of the angled token light is yourself.
+                  if (placed_token.actor.id == selected_token.actor.id) {
+                    inLight = true;
+                  }
+                }
+  
+                if (inLight) {
+                  let foundWall = Core.get_wall_collision(selected_token, placed_token);
+                  if (!foundWall) {
+                    // check for within dim
+                    if (tokenDistance <= tokenDimDis) {
+                      if ((lightLevel < 1) && (tokenDimDis > 0)) {
+                        lightLevel = 1;
+                      }
+                    }
+                    // check for within bright
+                    if (tokenDistance <= tokenBrtDis) {
+                      if ((lightLevel < 2) && (tokenBrtDis > 0)) {
+                        lightLevel = 2;
+                      }
                     }
                   }
                 }
@@ -308,7 +333,7 @@ export class Lighting {
     // Measure grid distance with elevation
     let e1 = Math.abs(x1 - x2);
     let e2 = Math.abs(y1 - y2);
-    let e3 = Math.abs(z1Actual - z2);
+    let e3 = Math.abs(z1Actual - z2Actual);
     let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
     elevated_distance = (distance / gridSize) * gridDistance;;
