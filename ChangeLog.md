@@ -1,5 +1,5 @@
-### Pending
-* Check on token light sources and account for Angles and Rotation.
+### Version 0.5.2
+* Check on token light sources now account for Angles and Rotation.
 * * Example: on use of a bullseye lattern by a player.
 
 ### Version 0.5.1
