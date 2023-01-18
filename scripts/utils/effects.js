@@ -49,16 +49,24 @@ export class Effects {
   }
 
   static async clearEffects(selected_token) {
-    const dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-    const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    let foundEffects = true;
+    // edge case, if there are multiple effects on the token
+    while (foundEffects) {
+      const dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+      const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
 
-    if (dim) {
-//      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
-      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
-    }
-    if (dark) {
-//      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
-      await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
+      if (!dim && !dark) {
+        foundEffects = false;
+      }
+
+      if (dim) {
+  //      Core.log(`attempting to clear: Dim: ${dim.label}:${dim.id} from: ${selected_token.actor.name}`)
+        await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dim.id])
+      }
+      if (dark) {
+  //      Core.log(`attempting to clear: Dark: ${dark.label}:${dark.id} from: ${selected_token.actor.name}`)
+        await selected_token.actor.deleteEmbeddedDocuments('ActiveEffect', [dark.id])
+      }
     }
   }
 

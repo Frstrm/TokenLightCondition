@@ -1,8 +1,10 @@
 import { Lighting } from './lighting.js';
+import { Effects } from './effects.js';
 
 export class Core {
 
   static CONSOLE_COLORS = ['background: #222; color: #ff80ff', 'color: #fff'];
+  static HEADER = `<b>Token Light Condition:</b> `;
 
   static log(format, ...args) {
     const level = game.settings.get('tokenlightcondition', 'logLevel');
@@ -19,6 +21,49 @@ export class Core {
         console.debug(...colorizeOutput(format, ...args));
       else if (level === 'log')
         console.log(...colorizeOutput(format, ...args));
+    }
+  }
+
+  static notify(level, message, ...options) {
+    if (message) {
+      options ??= {};
+
+      if (level === 'info') {
+        ui.notifications.info(this.HEADER + message, options);
+      } else if (level === 'warn') {
+        ui.notifications.warn(this.HEADER + message, options);
+      } else if (level === 'error') {
+        ui.notifications.error(this.HEADER + message, options);
+      }
+    }
+  }
+
+  static checkModuleState() {
+    let enableSetting = game.settings.get('tokenlightcondition', 'enable');
+    if (enableSetting) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static async toggleTokenLightCond(toggled) {
+    await game.settings.set('tokenlightcondition', 'enable', toggled);
+    if (game.user.isGM) {
+      let enableSetting = game.settings.get('tokenlightcondition', 'enable');
+
+      if (enableSetting) {
+        Core.notify('info','Enabled: Processing all tokens...');
+        await Lighting.check_all_tokens_lightingRefresh();
+      } else {
+        Core.notify('warn','Disabled: Removing light condition effects from all tokens');
+        for (const placed_token of canvas.tokens.placeables) {
+          if (this.isValidActor(placed_token)) {
+            await Effects.clearEffects(placed_token);
+          }
+        }
+        Core.notify('info','Removal Complete, Carry on!');
+      }
     }
   }
 
@@ -117,7 +162,7 @@ export class Core {
     let testResult = canvas.walls.checkCollision(new Ray(selected_token.center,targetObject.center),{type:"sight"});
     if (testResult.length == 0) {
       return false; // found no collision
-    } else{
+    } else {
       return true; // found collision
     }
   }

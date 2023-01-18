@@ -1,3 +1,18 @@
+### Version 0.5.2
+* Check on token light sources now account for Angles and Rotation.
+* * Example: on use of a bullseye lattern by a player.
+
+### Version 0.5.1
+* Check on light placements now account for Angles and Rotation.
+
+### Version 0.5.0
+* Add icon to Lighting Controls that enable/disables Token Light Condition
+* * On Enable (default): a pass will be made on tokens to check for needed effects
+* * On Disable: A pass will be made on tokens to remove Dim/Dark effects
+* * Give the module time when switching modes to process the tokens.
+* Added armor around adding/removing effects to reduce an edge case of multiple effects being applied.
+* Added ability to trigger ui notifications via method.
+
 ### Version 0.4.0
 * Optimize find_token_lighting workflow
 * * Reduce wallcollision checks until needed.
