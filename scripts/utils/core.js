@@ -74,7 +74,7 @@ export class Core {
     }
   }
 
-  static async isValidActor(selected_token) {
+  static isValidActor(selected_token) {
     if (selected_token.actor) {
       if (selected_token.actor.type == 'character' || selected_token.actor.type == 'npc') {
         if (!selected_token.actor.flags['tokenlightcondition']) {
