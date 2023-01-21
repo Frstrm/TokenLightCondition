@@ -12,12 +12,12 @@ export class Effects {
       const ce = game.dfreds?.effectInterface;
       // create CE effects
       if (ce) {
-        let ceDark = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond-effect-dark'));
+        let ceDark = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond.effect.dark.label'));
         if (!ceDark) {
           const dark = this.makeDarkEffectCE();
           ce.createNewCustomEffectsWith({ activeEffects: [dark] });
         }
-        let ceDim = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond-effect-dim'));
+        let ceDim = ce.findCustomEffectByName(game.i18n.localize('tokenlightcond.effect.dim.label'));
         if (!ceDim) {
           const dim = this.makeDimEffectCE();
           ce.createNewCustomEffectsWith({ activeEffects: [dim] });
@@ -28,10 +28,10 @@ export class Effects {
   
   static makeDarkEffectCE() {
     const dark = {
-      label: game.i18n.localize('tokenlightcond-effect-dark'),
+      label: game.i18n.localize('tokenlightcond.effect.dark.label'),
       icon: this.darkIcon,
       changes: [],
-      flags: { convenientDescription: game.i18n.localize('tokenlightcond-effect-dark-desc') },
+      flags: { convenientDescription: game.i18n.localize('tokenlightcond.effect.dark.desc') },
     };
 
     return dark;
@@ -39,10 +39,10 @@ export class Effects {
 
   static makeDimEffectCE() {
     const dim = {
-      label: game.i18n.localize('tokenlightcond-effect-dim'),
+      label: game.i18n.localize('tokenlightcond.effect.dim.label'),
       icon: this.dimIcon,
       changes: [],
-      flags: { convenientDescription: game.i18n.localize('tokenlightcond-effect-dim-desc') },
+      flags: { convenientDescription: game.i18n.localize('tokenlightcond.effect.dim.desc') },
     };
 
     return dim;
@@ -52,8 +52,8 @@ export class Effects {
     let foundEffects = true;
     // edge case, if there are multiple effects on the token
     while (foundEffects) {
-      const dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-      const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+      const dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dim.label'));
+      const dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dark.label'));
 
       if (!dim && !dark) {
         foundEffects = false;
@@ -71,7 +71,7 @@ export class Effects {
   }
 
   static async addDark(selected_token) {
-    const dark = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+    const dark = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dark.label'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
 
@@ -79,12 +79,12 @@ export class Effects {
       let added = false;
       if (source === 'ce') {
         if (ce) {
-          await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond-effect-dark'), uuid: selected_token.actor.uuid });
+          await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond.effect.dark.label'), uuid: selected_token.actor.uuid });
           added = true;
         }
       }
       if (source === 'cub') {
-        await game.cub.applyCondition(game.i18n.localize('tokenlightcond-effect-dark'), selected_token.actor);
+        await game.cub.applyCondition(game.i18n.localize('tokenlightcond.effect.dark.label'), selected_token.actor);
         added = true;
       }
       if (source === 'ae') {
@@ -98,7 +98,7 @@ export class Effects {
   }
 
   static async addDim(selected_token) {
-    const dim = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+    const dim = await selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dim.label'));
     const ce = game.dfreds?.effectInterface;
     const source = game.settings.get('tokenlightcondition', 'effectSource');
 
@@ -106,13 +106,13 @@ export class Effects {
       let added = false;
       if (source === 'ce') {
         if (ce) {
-          await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond-effect-dim'), uuid: selected_token.actor.uuid });
+          await game.dfreds.effectInterface.addEffect({ effectName: game.i18n.localize('tokenlightcond.effect.dim.label'), uuid: selected_token.actor.uuid });
           added = true;
         }
       }
       if (source === 'cub') {
         if (source === 'cub') {
-          await game.cub.applyCondition(game.i18n.localize('tokenlightcond-effect-dim'), selected_token.actor);
+          await game.cub.applyCondition(game.i18n.localize('tokenlightcond.effect.dim.label'), selected_token.actor);
           added = true;
         }
       }
@@ -128,7 +128,7 @@ export class Effects {
 
   static async addDarkAE(selected_token) {
     // If we haven't found an ouside source, create the default one
-    const label = game.i18n.localize("tokenlightcond-effect-dark");
+    const label = game.i18n.localize("tokenlightcond.effect.dark.label");
     let dark = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dark) {
@@ -136,7 +136,7 @@ export class Effects {
         label: label,
         icon: this.darkIcon,
         changes: [],
-        flags: { convenientDescription: game.i18n.localize("tokenlightcond-effect-dark-desc") },
+        flags: { convenientDescription: game.i18n.localize("tokenlightcond.effect.dark.desc") },
       };
 
       dark.flags['core.statusId'] = '1';
@@ -146,7 +146,7 @@ export class Effects {
 
   static async addDimAE(selected_token) {
     // If we haven't found an ouside source, create the default one
-    const label = game.i18n.localize("tokenlightcond-effect-dim");
+    const label = game.i18n.localize("tokenlightcond.effect.dim.label");
     let dim = selected_token.actor.effects.find(e => e.label === label);
 
     if (!dim) {
@@ -154,7 +154,7 @@ export class Effects {
         label: label,
         icon: this.dimIcon,
         changes: [],
-        flags: { convenientDescription: game.i18n.localize("tokenlightcond-effect-dim-desc") },
+        flags: { convenientDescription: game.i18n.localize("tokenlightcond.effect.dim.desc") },
       };
 
       dim.flags['core.statusId'] = '1';

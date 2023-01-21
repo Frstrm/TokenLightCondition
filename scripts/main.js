@@ -80,8 +80,8 @@ Hooks.on('renderTokenHUD', (tokenHUD, html, app) => {
 });
 
 Hooks.on('renderSettingsConfig', (app, html, data) => {
-  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-debug')).insertBefore($('[name="tokenlightcondition.logLevel"]').parents('div.form-group:first'));
-  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond-config-general')).insertBefore($('[name="tokenlightcondition.showTokenHud"]').parents('div.form-group:first'));
+  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond.config.debug')).insertBefore($('[name="tokenlightcondition.logLevel"]').parents('div.form-group:first'));
+  $('<div>').addClass('form-group group-header').html(game.i18n.localize('tokenlightcond.config.general')).insertBefore($('[name="tokenlightcondition.showTokenHud"]').parents('div.form-group:first'));
 });
 
 // ******************************************

@@ -262,7 +262,7 @@ export class Lighting {
     switch (lightLevel) {
       case 0:
         lightLevelText = 'dark';
-        let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+        let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dark.label'));
         if (!dark) {
           await Effects.clearEffects(selected_token);
           await Effects.addDark(selected_token);
@@ -270,7 +270,7 @@ export class Lighting {
         break;
       case 1:
         lightLevelText = 'dim';
-        let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+        let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond.effect.dim.label'));
         if (!dim) {
           await Effects.clearEffects(selected_token);
           await Effects.addDim(selected_token);
