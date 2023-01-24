@@ -1,3 +1,7 @@
+### Version 0.5.3
+* Fix for isValidActor checks
+* Additional armoring around isValidActor and hp checks
+
 ### Version 0.5.2
 * Check on token light sources now account for Angles and Rotation.
 * * Example: on use of a bullseye lattern by a player.
