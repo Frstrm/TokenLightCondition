@@ -24,31 +24,35 @@ export class Lighting {
   }
 
   static async show_lightLevel_box(selected_token, tokenHUD, html) {
-    if (selected_token.actor.system.attributes.hp.value > 0) {
-      // Determine lightLevel of the token (dark,dim,light)
-      let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
+    if (Core.isValidActor(selected_token)) {
+      if (selected_token.actor.system.attributes.hp?.value > 0) {
+        // Determine lightLevel of the token (dark,dim,light)
+        let boxString = this.lightTable[await this.find_token_lighting(selected_token)];
 
-      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
-      html.find('.right').append(divToAdd);
-    
-      divToAdd.change(async (inputbox) => {
-      });
+        const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+        html.find('.right').append(divToAdd);
+      
+        divToAdd.change(async (inputbox) => {
+        });
+      }
     }
   }
 
   static async show_lightLevel_player_box(selected_token, tokenHUD, html) {
-    if (selected_token.actor.system.attributes.hp.value > 0) {
-      // Show the stored value lightLevel of the token (dark,dim,light)
-      // only the GM should be processing the token light level.
-      let storedResult = selected_token.actor.getFlag('tokenlightcondition','lightLevel');
+    if (Core.isValidActor(selected_token)) {
+      if (selected_token.actor.system.attributes.hp?.value > 0) {
+        // Show the stored value lightLevel of the token (dark,dim,light)
+        // only the GM should be processing the token light level.
+        let storedResult = selected_token.actor.getFlag('tokenlightcondition','lightLevel');
 
-      let boxString = this.lightTable[storedResult];
+        let boxString = this.lightTable[storedResult];
 
-      const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
-      html.find('.right').append(divToAdd);
-    
-      divToAdd.change(async (inputbox) => {
-      });
+        const divToAdd = $('<input disabled id="lightL_scr_inp_box" title="Light Level" type="text" name="lightL_score_inp_box" value="' + boxString + '"></input>');
+        html.find('.right').append(divToAdd);
+      
+        divToAdd.change(async (inputbox) => {
+        });
+      }
     }
   }
 
@@ -67,7 +71,7 @@ export class Lighting {
   static async check_all_tokens_lightingRefresh() {
     let result = [];
     for (const placed_token of canvas.tokens.placeables) {
-        result.push(await this.check_token_lighting(placed_token));
+      result.push(await this.check_token_lighting(placed_token));
     }
     return result;
   }
