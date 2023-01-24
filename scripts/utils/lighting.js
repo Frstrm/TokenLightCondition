@@ -55,7 +55,7 @@ export class Lighting {
   static async check_token_lighting(placed_token) {
     if (game.user.isGM) {
       if (Core.isValidActor(placed_token)) {
-        if (placed_token.actor.system.attributes.hp.value > 0) {
+        if (placed_token.actor.system.attributes.hp?.value > 0) {
           await this.find_token_lighting(placed_token);
         } else {
           Effects.clearEffects(placed_token);
