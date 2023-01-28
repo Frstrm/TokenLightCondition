@@ -1,4 +1,5 @@
 import { Core } from './utils/core.js';
+import { Effects } from './utils/effects.js';
 
 Hooks.once('setup', () => {
 
@@ -77,7 +78,15 @@ Hooks.once('ready', () => {
     config: true,
     type: String,
     choices,
-    default: defaultSource
-  });
+    default: defaultSource,
+    onChange: value => {
+      if (!canvas.ready || !game.user.isGM) {
+          Core.log('config OnChange');
+          return;
+      }
+
+      Effects.initializeEffects();
+  }
+});
 
 });
