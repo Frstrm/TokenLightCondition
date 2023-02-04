@@ -86,7 +86,16 @@ Hooks.once('ready', () => {
       }
 
       Effects.initializeEffects();
-  }
-});
+    }
+  });
+
+  game.settings.register('tokenlightcondition', 'globalIllumination', {
+    name: game.i18n.localize("tokenlightcond-config-globalIllumination-name"),
+    hint: game.i18n.localize("tokenlightcond-config-globalIllumination-hint"),
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+  });
 
 });

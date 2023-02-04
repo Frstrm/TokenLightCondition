@@ -79,69 +79,77 @@ export class Lighting {
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
 
-    if (game.modules.get('perfect-vision')?.active) {
-      // placed drawings with light overrides (perfect-vision)
-      let drawingArray = [];
-      if (canvas.drawings.placeables) {
-        for (const placed_drawing of canvas.drawings.placeables) {
-          if (placed_drawing.document.flags['perfect-vision']) {
-            if (placed_drawing.document.flags['perfect-vision'].enabled) {
-              let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
-              if (result) {
-                drawingArray.push(placed_drawing);
+    // is scene tokenVision enabled?
+    let tokenVision = canvas.scene.tokenVision;
+    if (!tokenVision) {
+      lightLevel = 2;
+    }
+
+    if (lightLevel < 2) {
+      if (game.modules.get('perfect-vision')?.active) {
+        // placed drawings with light overrides (perfect-vision)
+        let drawingArray = [];
+        if (canvas.drawings.placeables) {
+          for (const placed_drawing of canvas.drawings.placeables) {
+            if (placed_drawing.document.flags['perfect-vision']) {
+              if (placed_drawing.document.flags['perfect-vision'].enabled) {
+                let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
+                if (result) {
+                  drawingArray.push(placed_drawing);
+                }
               }
+              else {
+                // drawing is not enabled
+              }
+            }
+          }
+          // if a drawing is found, or if there are multiple...
+          if (drawingArray.length > 0) {
+            let toplayer = null;
+            let layerZ = -1000;
+            // sort to find the top layer token is in
+            for (const drawitem of drawingArray) {
+              if (drawitem._zIndex > layerZ) {
+                layerZ = drawitem._zIndex;
+                toplayer = drawitem;
+              }
+            }
+            // read the darkness from the top layer
+            let findDarkness = false;
+            let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
+            if (drawingOverride != null) { 
+              // found darkness, don't do anything else
             }
             else {
-              // drawing is not enabled
-            }
-          }
-        }
-        // if a drawing is found, or if there are multiple...
-        if (drawingArray.length > 0) {
-          let toplayer = null;
-          let layerZ = -1000;
-          // sort to find the top layer token is in
-          for (const drawitem of drawingArray) {
-            if (drawitem._zIndex > layerZ) {
-              layerZ = drawitem._zIndex;
-              toplayer = drawitem;
-            }
-          }
-          // read the darkness from the top layer
-          let findDarkness = false;
-          let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
-          if (drawingOverride != null) { 
-            // found darkness, don't do anything else
-          }
-          else {
-            // find a layer with inheritance that has darkness
-            let nextLayer = toplayer; 
-            let loopCount = 0;
-            while (!findDarkness) {
-              let objectID = nextLayer.document.flags['perfect-vision'].prototype;
-              if (objectID) {
-                for (const findDrawing of canvas.drawings.placeables) {
-                  if (findDrawing.id == objectID) {
-                    nextLayer = findDrawing;
-                    drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
-                    if (drawingOverride != null) {
-                      findDarkness = true;
+              // find a layer with inheritance that has darkness
+              let nextLayer = toplayer; 
+              let loopCount = 0;
+              while (!findDarkness) {
+                let objectID = nextLayer.document.flags['perfect-vision'].prototype;
+                if (objectID) {
+                  for (const findDrawing of canvas.drawings.placeables) {
+                    if (findDrawing.id == objectID) {
+                      nextLayer = findDrawing;
+                      drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
+                      if (drawingOverride != null) {
+                        findDarkness = true;
+                      }
                     }
                   }
+                } else {
+                  findDarkness = true; // there is no more prototypes to search, exit
                 }
-              } else {
-                findDarkness = true; // there is no more prototypes to search, exit
-              }
-              loopCount = loopCount + 1;
-              if (loopCount > 10) {
-                findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
+                loopCount = loopCount + 1;
+                if (loopCount > 10) {
+                  findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
+                }
               }
             }
-          }
-          if (drawingOverride != null) { // we still don't have an override, skip
-            let drawingLightLevel = this.setLightLevel(drawingOverride);
-            if (drawingLightLevel > lightLevel) {
-              lightLevel = drawingLightLevel;
+            if (drawingOverride != null) { // we still don't have an override, skip
+              let drawingLightLevel = this.setLightLevel(drawingOverride);
+              if (drawingLightLevel > lightLevel) {
+                lightLevel = drawingLightLevel;
+              }
             }
           }
         }
@@ -255,6 +263,40 @@ export class Lighting {
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    }
+
+    let globalConfig = game.settings.get('tokenlightcondition', 'globalIllumination');
+
+    if (globalConfig) {
+      // check global lighting
+      let globalLight = canvas.scene.globalLight;
+      let darkness = canvas.scene.darkness;
+
+      // without mods this can be null or disabled.
+      let globalLightThreshold = canvas.scene.globalLightThreshold;
+      let globalLightBright = true;
+
+      if (game.modules.get('perfect-vision')?.active) {
+        let value = canvas.scene.flags['perfect-vision'].globalLight.bright;
+        if (!value) {
+          globalLightBright = false;
+        }
+      }
+
+      if (globalLight) {
+        if (globalLightThreshold) {
+          if (darkness <= globalLightThreshold){
+            // globallight is active
+            if (!globalLightBright) { // perfect vision gives an option for dim
+              if (lightLevel < 1) {
+                lightLevel = 1; // scene is set to dim
+              }
+            } else {
+              lightLevel = 2; // scene is set to bright
             }
           }
         }
