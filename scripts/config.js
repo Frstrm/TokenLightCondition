@@ -1,5 +1,6 @@
 import { Core } from './utils/core.js';
 import { Effects } from './utils/effects.js';
+import { Lighting } from './utils/lighting.js';
 
 Hooks.once('setup', () => {
 
@@ -81,7 +82,6 @@ Hooks.once('ready', () => {
     default: defaultSource,
     onChange: value => {
       if (!canvas.ready || !game.user.isGM) {
-          Core.log('config OnChange');
           return;
       }
 
@@ -96,6 +96,13 @@ Hooks.once('ready', () => {
     config: true,
     default: false,
     type: Boolean,
+    onChange: value => {
+      if (!canvas.ready || !game.user.isGM) {
+        return;
+      }
+
+      Lighting.check_all_tokens_lightingRefresh();
+    }
   });
 
 });

@@ -291,7 +291,7 @@ export class Lighting {
         if (globalLightThreshold) {
           if (darkness <= globalLightThreshold){
             // globallight is active
-            if (!globalLightBright) { // perfect vision gives an option for dim
+            if (!globalLightBright) { // perfect vision gives an option for bright/dim
               if (lightLevel < 1) {
                 lightLevel = 1; // scene is set to dim
               }
