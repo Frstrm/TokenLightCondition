@@ -281,7 +281,8 @@ export class Lighting {
       let globalLightBright = true;
 
       if (game.modules.get('perfect-vision')?.active) {
-        let value = canvas.scene.flags['perfect-vision'].globalLight.bright;
+        // globallight settings aren't established until you SAVE after accessing globalillumination panel
+        let value = canvas.scene.flags['perfect-vision'].globalLight?.bright;
         if (!value) {
           globalLightBright = false;
         }
