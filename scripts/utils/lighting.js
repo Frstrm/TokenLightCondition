@@ -79,77 +79,69 @@ export class Lighting {
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
 
-    // is scene tokenVision enabled?
-    let tokenVision = canvas.scene.tokenVision;
-    if (!tokenVision) {
-      lightLevel = 2;
-    }
-
-    if (lightLevel < 2) {
-      if (game.modules.get('perfect-vision')?.active) {
-        // placed drawings with light overrides (perfect-vision)
-        let drawingArray = [];
-        if (canvas.drawings.placeables) {
-          for (const placed_drawing of canvas.drawings.placeables) {
-            if (placed_drawing.document.flags['perfect-vision']) {
-              if (placed_drawing.document.flags['perfect-vision'].enabled) {
-                let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
-                if (result) {
-                  drawingArray.push(placed_drawing);
-                }
+    if (game.modules.get('perfect-vision')?.active) {
+      // placed drawings with light overrides (perfect-vision)
+      let drawingArray = [];
+      if (canvas.drawings.placeables) {
+        for (const placed_drawing of canvas.drawings.placeables) {
+          if (placed_drawing.document.flags['perfect-vision']) {
+            if (placed_drawing.document.flags['perfect-vision'].enabled) {
+              let result = Core.isWithinDrawing(placed_drawing.document,selected_token);
+              if (result) {
+                drawingArray.push(placed_drawing);
               }
-              else {
-                // drawing is not enabled
+            }
+            else {
+              // drawing is not enabled
+            }
+          }
+        }
+        // if a drawing is found, or if there are multiple...
+        if (drawingArray.length > 0) {
+          let toplayer = null;
+          let layerZ = -1000;
+          // sort to find the top layer token is in
+          for (const drawitem of drawingArray) {
+            if (drawitem._zIndex > layerZ) {
+              layerZ = drawitem._zIndex;
+              toplayer = drawitem;
+            }
+          }
+          // read the darkness from the top layer
+          let findDarkness = false;
+          let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
+          if (drawingOverride != null) { 
+            // found darkness, don't do anything else
+          }
+          else {
+            // find a layer with inheritance that has darkness
+            let nextLayer = toplayer; 
+            let loopCount = 0;
+            while (!findDarkness) {
+              let objectID = nextLayer.document.flags['perfect-vision'].prototype;
+              if (objectID) {
+                for (const findDrawing of canvas.drawings.placeables) {
+                  if (findDrawing.id == objectID) {
+                    nextLayer = findDrawing;
+                    drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
+                    if (drawingOverride != null) {
+                      findDarkness = true;
+                    }
+                  }
+                }
+              } else {
+                findDarkness = true; // there is no more prototypes to search, exit
+              }
+              loopCount = loopCount + 1;
+              if (loopCount > 10) {
+                findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
               }
             }
           }
-          // if a drawing is found, or if there are multiple...
-          if (drawingArray.length > 0) {
-            let toplayer = null;
-            let layerZ = -1000;
-            // sort to find the top layer token is in
-            for (const drawitem of drawingArray) {
-              if (drawitem._zIndex > layerZ) {
-                layerZ = drawitem._zIndex;
-                toplayer = drawitem;
-              }
-            }
-            // read the darkness from the top layer
-            let findDarkness = false;
-            let drawingOverride = toplayer.document.flags['perfect-vision'].darkness;
-            if (drawingOverride != null) { 
-              // found darkness, don't do anything else
-            }
-            else {
-              // find a layer with inheritance that has darkness
-              let nextLayer = toplayer; 
-              let loopCount = 0;
-              while (!findDarkness) {
-                let objectID = nextLayer.document.flags['perfect-vision'].prototype;
-                if (objectID) {
-                  for (const findDrawing of canvas.drawings.placeables) {
-                    if (findDrawing.id == objectID) {
-                      nextLayer = findDrawing;
-                      drawingOverride = nextLayer.document.flags['perfect-vision'].darkness;
-                      if (drawingOverride != null) {
-                        findDarkness = true;
-                      }
-                    }
-                  }
-                } else {
-                  findDarkness = true; // there is no more prototypes to search, exit
-                }
-                loopCount = loopCount + 1;
-                if (loopCount > 10) {
-                  findDarkness = true; // don't get caught in a infinite loop if someone links their drawings together.
-                }
-              }
-            }
-            if (drawingOverride != null) { // we still don't have an override, skip
-              let drawingLightLevel = this.setLightLevel(drawingOverride);
-              if (drawingLightLevel > lightLevel) {
-                lightLevel = drawingLightLevel;
-              }
+          if (drawingOverride != null) { // we still don't have an override, skip
+            let drawingLightLevel = this.setLightLevel(drawingOverride);
+            if (drawingLightLevel > lightLevel) {
+              lightLevel = drawingLightLevel;
             }
           }
         }
