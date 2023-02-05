@@ -278,12 +278,16 @@ export class Lighting {
 
       // without mods this can be null or disabled.
       let globalLightThreshold = canvas.scene.globalLightThreshold;
+      // if field is empty (0-1), then the value is null, set the value to 1 for evaluation
+      if (globalLightThreshold == null) {
+        globalLightThreshold = 1;
+      }
       let globalLightBright = true;
 
       if (game.modules.get('perfect-vision')?.active) {
         // globallight settings aren't established until you SAVE after accessing globalillumination panel
         let value = canvas.scene.flags['perfect-vision'].globalLight?.bright;
-        if (!value) {
+        if (value == false) {
           globalLightBright = false;
         }
       }
