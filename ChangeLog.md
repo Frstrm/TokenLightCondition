@@ -1,6 +1,5 @@
-### Pending
-* Add experimental option in config
-* experimental option for using Global Illumination settings
+### Version 0.5.4
+* experimental option for using Scene Global Illumination settings
 
 ### Version 0.5.3
 * Fix for isValidActor checks
