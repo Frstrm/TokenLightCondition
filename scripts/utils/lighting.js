@@ -79,6 +79,45 @@ export class Lighting {
   static async find_token_lighting(selected_token) {
     let lightLevel = 0;
 
+    let globalConfig = game.settings.get('tokenlightcondition', 'globalIllumination');
+
+    if (globalConfig) {
+      // check global lighting
+      let globalLight = canvas.scene.globalLight;
+      let darkness = canvas.scene.darkness;
+
+      // without mods this can be null or disabled.
+      let globalLightThreshold = canvas.scene.globalLightThreshold;
+      // if field is empty (0-1), then the value is null, set the value to 1 for evaluation
+      if (globalLightThreshold == null) {
+        globalLightThreshold = 1;
+      }
+      let globalLightBright = true;
+
+      if (game.modules.get('perfect-vision')?.active) {
+        // globallight settings aren't established until you SAVE after accessing globalillumination panel
+        let value = canvas.scene.flags['perfect-vision'].globalLight?.bright;
+        if (value == false) {
+          globalLightBright = false;
+        }
+      }
+
+      if (globalLight) {
+        if (globalLightThreshold) {
+          if (darkness <= globalLightThreshold){
+            // globallight is active
+            if (!globalLightBright) { // perfect vision gives an option for bright/dim
+              if (lightLevel < 1) {
+                lightLevel = 1; // scene is set to dim
+              }
+            } else {
+              lightLevel = 2; // scene is set to bright
+            }
+          }
+        }
+      }
+    }
+
     if (game.modules.get('perfect-vision')?.active) {
       // placed drawings with light overrides (perfect-vision)
       let drawingArray = [];
@@ -140,9 +179,9 @@ export class Lighting {
           }
           if (drawingOverride != null) { // we still don't have an override, skip
             let drawingLightLevel = this.setLightLevel(drawingOverride);
-            if (drawingLightLevel > lightLevel) {
+//            if (drawingLightLevel > lightLevel) {
               lightLevel = drawingLightLevel;
-            }
+//            }
           }
         }
       }

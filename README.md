@@ -93,5 +93,8 @@ CUB option is only available if both Dim AND Dark conditions exist in the Lab.
 
 Convienent Effects entries are added on module load if they don't exist.
 
+### **Global Illumination** (experimental)
+Use Scene Global Illumination settings in determination of token light conditions.
+
 ## Suggested Modules
 * [Stealthy](https://foundryvtt.com/packages/stealthy)

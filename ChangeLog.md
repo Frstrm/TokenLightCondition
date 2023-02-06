@@ -1,3 +1,7 @@
+### Pending
+* Add experimental option in config
+* experimental option for using Global Illumination settings
+
 ### Version 0.5.3
 * Fix for isValidActor checks
 * Additional armoring around isValidActor and hp checks

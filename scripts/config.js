@@ -1,5 +1,6 @@
 import { Core } from './utils/core.js';
 import { Effects } from './utils/effects.js';
+import { Lighting } from './utils/lighting.js';
 
 Hooks.once('setup', () => {
 
@@ -81,12 +82,27 @@ Hooks.once('ready', () => {
     default: defaultSource,
     onChange: value => {
       if (!canvas.ready || !game.user.isGM) {
-          Core.log('config OnChange');
           return;
       }
 
       Effects.initializeEffects();
-  }
-});
+    }
+  });
+
+  game.settings.register('tokenlightcondition', 'globalIllumination', {
+    name: game.i18n.localize("tokenlightcond-config-globalIllumination-name"),
+    hint: game.i18n.localize("tokenlightcond-config-globalIllumination-hint"),
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+    onChange: value => {
+      if (!canvas.ready || !game.user.isGM) {
+        return;
+      }
+
+      Lighting.check_all_tokens_lightingRefresh();
+    }
+  });
 
 });
