@@ -1,3 +1,6 @@
+### Version Pending
+* remove experimental state of Global Illumincation setting.
+
 ### Version 0.5.4
 * experimental option for using Scene Global Illumination settings
 
