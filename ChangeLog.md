@@ -1,5 +1,8 @@
 ### Version Pending
 * remove experimental state of Global Illumincation setting.
+* added system pf2e
+* * creates item effects on initialization
+* * accounts for actor item effects usage on token
 
 ### Version 0.5.4
 * experimental option for using Scene Global Illumination settings

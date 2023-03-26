@@ -302,27 +302,55 @@ export class Lighting {
 
     // final results determine if effects need to be removed/applied.
     let lightLevelText = 'bright';
-    switch (lightLevel) {
-      case 0:
-        lightLevelText = 'dark';
-        let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
-        if (!dark) {
+    let dark = '';
+    let dim = '';
+    let system_pf2e = (game.system.id == 'pf2e');
+    if (system_pf2e) {
+      switch (lightLevel) {
+        case 0:
+          lightLevelText = 'dark';
+          let dark = selected_token.actor.items.find(e => e.name === game.i18n.localize('tokenlightcond-effect-dark'));
+          if (!dark) {
+            await Effects.clearEffects(selected_token);
+            await Effects.addDark(selected_token);
+          }
+          break;
+        case 1:
+          lightLevelText = 'dim';
+          let dim = selected_token.actor.items.find(e => e.name === game.i18n.localize('tokenlightcond-effect-dim'));
+          if (!dim) {
+            await Effects.clearEffects(selected_token);
+            await Effects.addDim(selected_token);
+          }
+          break;
+        case 2:
+          lightLevelText = 'bright';
           await Effects.clearEffects(selected_token);
-          await Effects.addDark(selected_token);
-        }
-        break;
-      case 1:
-        lightLevelText = 'dim';
-        let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
-        if (!dim) {
+      }        
+    } else {
+      switch (lightLevel) {
+        case 0:
+          lightLevelText = 'dark';
+          let dark = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dark'));
+          if (!dark) {
+            await Effects.clearEffects(selected_token);
+            await Effects.addDark(selected_token);
+          }
+          break;
+        case 1:
+          lightLevelText = 'dim';
+          let dim = selected_token.actor.effects.find(e => e.label === game.i18n.localize('tokenlightcond-effect-dim'));
+          if (!dim) {
+            await Effects.clearEffects(selected_token);
+            await Effects.addDim(selected_token);
+          }
+          break;
+        case 2:
+          lightLevelText = 'bright';
           await Effects.clearEffects(selected_token);
-          await Effects.addDim(selected_token);
-        }
-        break;
-      case 2:
-        lightLevelText = 'bright';
-        await Effects.clearEffects(selected_token);
-    }        
+      }        
+  
+    }
     await selected_token.actor.setFlag('tokenlightcondition', 'lightLevel', lightLevelText);
     
     let result = selected_token.actor.getFlag('tokenlightcondition','lightLevel')
