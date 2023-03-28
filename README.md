@@ -22,6 +22,10 @@ Determine the light condition of a token, and generate effects on the token to i
 
 This is to allow players, or modules to use these effects to help rules determination around those conditions.
 
+# Systems Suported
+- dnd5e
+- pf2e
+
 # Features
 - Adds a token Hud element to selected token (right-click the token):
 -   Hud indicator - ( DRK, DIM, BRT )

@@ -1,4 +1,4 @@
-### Version Pending
+### Version 0.6.0
 * remove experimental state of Global Illumincation setting.
 * added system pf2e
 * * creates item effects on initialization
