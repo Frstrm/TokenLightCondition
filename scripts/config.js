@@ -55,13 +55,18 @@ Hooks.once('ready', () => {
   });
 
   let choices = {
-    'none': game.i18n.localize("tokenlightcond-effectSource-none"),
-    'ae': game.i18n.localize("tokenlightcond-effectSource-ae"),
+    'none': game.i18n.localize("tokenlightcond-effectSource-none")
   };
-  let defaultSource = 'ae';
+  let defaultSource = 'none';
+  let findATL = game.modules.get('ATL')?.active;
   let findCubDark = game.cub?.getCondition(game.i18n.localize("tokenlightcond-effect-dark"));
   let findCubDim = game.cub?.getCondition(game.i18n.localize("tokenlightcond-effect-dim"));
   let findCE = game.dfreds?.effectInterface;
+
+  if (findATL) {
+    choices['ae'] = game.i18n.localize("tokenlightcond-effectSource-ae");
+    defaultSource = 'ae';
+  }
 
   if (findCubDark && findCubDim) {
     choices['cub'] = game.i18n.localize("tokenlightcond-effectSource-cub");

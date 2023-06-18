@@ -159,7 +159,14 @@ export class Core {
   }
 
   static get_wall_collision(selected_token, targetObject) {
-    let testResult = canvas.walls.checkCollision(new Ray(selected_token.center,targetObject.center),{type:"sight"});
+    let testResult = [];
+    if (game.version < 11) {
+      testResult = canvas.walls.checkCollision(new Ray(selected_token.center,targetObject.center),{type:"sight"});
+    }
+    else {
+      testResult = CONFIG.Canvas.polygonBackends['sight'].testCollision(selected_token.center,targetObject.center,{type:"sight",mode:"all"});
+    }
+
     if (testResult.length == 0) {
       return false; // found no collision
     } else {
