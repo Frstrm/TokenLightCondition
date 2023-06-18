@@ -1,3 +1,8 @@
+### Version 0.6.1
+* Core Version updated to support 11
+* Updated wall collision check to newer methods
+* Changed effects check for ATL module, this impacts config settings
+
 ### Version 0.6.0
 * remove experimental state of Global Illumincation setting.
 * added system pf2e
