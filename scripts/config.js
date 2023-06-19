@@ -68,6 +68,12 @@ Hooks.once('ready', () => {
     defaultSource = 'ae';
   }
 
+  const system_pf2e = (game.system.id == 'pf2e');
+  if (system_pf2e) {
+    choices['ae'] = game.i18n.localize("tokenlightcond-effectSource-ae");
+    defaultSource = 'ae';
+  }
+
   if (findCubDark && findCubDim) {
     choices['cub'] = game.i18n.localize("tokenlightcond-effectSource-cub");
     defaultSource = 'cub';
