@@ -1,3 +1,6 @@
+### Version 0.6.2
+* Fix: config change disabled pf2e effects
+
 ### Version 0.6.1
 * Core Version updated to support 11
 * Updated wall collision check to newer methods

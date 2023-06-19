@@ -233,6 +233,13 @@ export class Effects {
         await this.addDarkAE(selected_token);
         added = true;
       }
+      if (system_pf2e) {
+        if (source == 'none') {
+          await this.addDarkAE(selected_token);
+          added = true;
+        }
+      }
+
       if (added) {
         Core.log(`Dark added: ${selected_token.actor.name} via ${source}`);
       }
@@ -269,6 +276,13 @@ export class Effects {
         await this.addDimAE(selected_token);
         added = true;
       }
+      if (system_pf2e) {
+        if (source == 'none') {
+          await this.addDimAE(selected_token);
+          added = true;
+        }
+      }
+
       if (added) {
         Core.log(`Dim added: ${selected_token.actor.name} via ${source}`);
       }
