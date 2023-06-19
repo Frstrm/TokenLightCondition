@@ -1,3 +1,7 @@
+### Version 0.6.3
+* Restored effects option to config for pf2e system
+* * pf2e is not dependent on ATL to add effects to token
+
 ### Version 0.6.2
 * Fix: config change disabled pf2e effects
 
