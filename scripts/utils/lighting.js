@@ -189,132 +189,66 @@ export class Lighting {
 
     const negativeLights = game.settings.get('tokenlightcondition', 'negativelights');
     if (lightLevel < 2 || negativeLights) {
-      // placed lights
-      if (canvas.lighting.objects) {
-        const sortedLights = canvas.lighting.objects.children.sort((a,b) => b.document.config.luminosity - a.document.config.luminosity);
-        for (const placed_light of sortedLights) {
-          if (placed_light.source.active == true) {
-            let tokenDistance = this.get_calculated_light_distance(selected_token, placed_light);
-            let lightDimDis = placed_light.document.config.dim;
-            let lightBrtDis = placed_light.document.config.bright;
-            const negativeLight = negativeLights && placed_light.document.config.luminosity < 0;
+        const lightSources = [...canvas.lighting.objects.children, ...canvas.tokens.placeables];
+        const sortedLights = lightSources.sort((a,b) => (b.document.light ?? b.document.config).luminosity - (a.document.light ?? a.document.config).luminosity );
+        for (const lightSource of sortedLights) {
+            const isToken = Boolean(lightSource.light);
+            const source = isToken ? lightSource.light : lightSource.source;
+            if (source.active) {
+                let tokenDistance = Core.get_calculated_distance(selected_token, source);
+                let lightDimDis = source.data.dim;
+                let lightBrtDis = source.data.bright;
+                const negativeLight = negativeLights && source.data.luminosity < 0;
 
-            if (tokenDistance <= lightDimDis || tokenDistance <= lightBrtDis) {
-              // If light has a reduced angle and possibly rotated...
-              let inLight = true;
-              if (placed_light.document.config.angle < 360) {
-                let lightAngle = placed_light.document.config.angle;
-                let lightRotation = placed_light.document.rotation;
-                let angle = this.get_calculated_light_angle(selected_token, placed_light);
-
-                // convert from +180/-180
-                if (angle < 0) {angle += 360;}
-
-                // find the difference between token angle and light rotation
-                let adjustedAngle = Math.abs(angle - lightRotation);
-                if (adjustedAngle > 180) {adjustedAngle = 360 - adjustedAngle;}
-                
-                // check if token is in the light wedge or not
-                if (adjustedAngle > (lightAngle /2)) {
-                  inLight = false;
+                if (tokenDistance <= lightDimDis || tokenDistance <= lightBrtDis) {
+                    // If light has a reduced angle and possibly rotated...
+                    let inLight = true;
+                    const lightAngle = source.data.angle;
+                    if (lightAngle < 360) {
+                      let lightRotation = source.data.rotation;
+                      let angle = this.get_calculated_light_angle(selected_token, lightSource);
+      
+                      // convert from +180/-180
+                      if (angle < 0) {angle += 360;}
+      
+                      // find the difference between token angle and light rotation
+                      let adjustedAngle = Math.abs(angle - lightRotation);
+                      if (adjustedAngle > 180) {adjustedAngle = 360 - adjustedAngle;}
+                      
+                      // check if token is in the light wedge or not
+                      if (adjustedAngle > (lightAngle / 2)) {
+                        inLight = false;
+                      }
+                    }
+      
+                    // If the token is found to be within a potential light...
+                    if (inLight) {
+                      let foundWall = Core.get_wall_collision(selected_token, lightSource);
+      
+                      if (!foundWall) {
+                        // check for dim
+                        if (tokenDistance <= lightDimDis && (lightDimDis > 0)) {
+                          if (negativeLight && lightLevel > 1) {
+                            lightLevel = 1;
+                          }
+                          else if ((lightLevel < 1) && !negativeLight) {
+                            lightLevel = 1;
+                          }
+                        }
+                        // check for bright
+                        if (tokenDistance <= lightBrtDis && (lightBrtDis > 0)) {
+                          if (negativeLight && lightLevel > 0) {
+                            lightLevel = 0;
+                          }
+                          else if ((lightLevel < 2) && !negativeLight) {
+                            lightLevel = 2;
+                          }
+                        }
+                      }
+                    }
                 }
-              }
-
-              // If the token is found to be within a potential light...
-              if (inLight) {
-                let foundWall = Core.get_wall_collision(selected_token, placed_light);
-
-                if (!foundWall) {
-                  // check for dim
-                  if (tokenDistance <= lightDimDis && (lightDimDis > 0)) {
-                    if (negativeLight && lightLevel > 1) {
-                      lightLevel = 1;
-                    }
-                    else if ((lightLevel < 1) && !negativeLight) {
-                      lightLevel = 1;
-                    }
-                  }
-                  // check for bright
-                  if (tokenDistance <= lightBrtDis && (lightBrtDis > 0)) {
-                    if (negativeLight && lightLevel > 0) {
-                      lightLevel = 0;
-                    }
-                    else if ((lightLevel < 2) && !negativeLight) {
-                      lightLevel = 2;
-                    }
-                  }
-                }
-              }
             }
-          }
         }
-      }
-    }
-
-    if (lightLevel < 2 || negativeLights) {
-      // placed tokens
-      if (canvas.tokens.placeables) {
-        const sortedTokens = canvas.tokens.placeables.sort((a,b) => b.document.light.luminosity - a.document.light.luminosity);
-        for (const placed_token of sortedTokens) {
-          if (placed_token.actor) {
-            if (placed_token.light.active == true) {
-              let tokenDistance = Core.get_calculated_distance(selected_token, placed_token);
-              let tokenDimDis = placed_token.document.light.dim;
-              let tokenBrtDis = placed_token.document.light.bright;
-              const negativeLight = negativeLights && placed_token.document.light.luminosity < 0;
-              
-              if (tokenDistance <= tokenDimDis || tokenDistance <= tokenBrtDis) {
-                let inLight = true;
-                if (placed_token.light.data.angle < 360) {
-                  let lightAngle = placed_token.light.data.angle;
-                  let lightRotation = placed_token.light.data.rotation;
-                  let angle = this.get_calculated_light_angle(selected_token, placed_token);
-                  // convert from +180/-180
-                  if (angle < 0) {angle += 360;}
-  
-                  // find the difference between token angle and light rotation
-                  let adjustedAngle = Math.abs(angle - lightRotation);
-                  if (adjustedAngle > 180) {adjustedAngle = 360 - adjustedAngle;}
-                  
-                  // check if token is in the light wedge or not
-                  if (adjustedAngle > (lightAngle /2)) {
-                    inLight = false;
-                  }
-
-                  // override if the source of the angled token light is yourself.
-                  if (placed_token.actor.id == selected_token.actor.id) {
-                    inLight = true;
-                  }
-                }
-  
-                if (inLight) {
-                  let foundWall = Core.get_wall_collision(selected_token, placed_token);
-                  if (!foundWall) {
-                    // check for within dim
-                    if (tokenDistance <= tokenDimDis && (tokenDimDis > 0)) {
-                      if (negativeLight && lightLevel > 1) {
-                        lightLevel = 1;
-                      }
-                      else if ((lightLevel < 1) && !negativeLight) {
-                        lightLevel = 1;
-                      }
-                    }
-                    // check for within bright
-                    if (tokenDistance <= tokenBrtDis && (tokenBrtDis > 0)) {
-                      if (negativeLight && lightLevel > 0) {
-                        lightLevel = 0;
-                      }
-                      else if ((lightLevel < 2) && !negativeLight) {
-                        lightLevel = 2;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
 
     // final results determine if effects need to be removed/applied.
