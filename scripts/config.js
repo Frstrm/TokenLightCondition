@@ -126,7 +126,7 @@ Hooks.once('ready', () => {
     range: {
       min: 0,
       max: 3000,
-      step: 1
+      step: 50
     },
     onChange: value => {}
   });
