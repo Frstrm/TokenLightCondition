@@ -45,10 +45,16 @@ Hooks.on('getSceneControlButtons', controls => {
   }
 });
 
+let refreshId = 0;
 Hooks.on('lightingRefresh', (data) => {
   if (game.user.isGM) {
     if (Core.checkModuleState()) {
-      processLightingRefresh();
+        const delay = game.settings.get('tokenlightcondition', 'delaycalculations');
+        if (delay !== 0) {
+            clearTimeout(refreshId);
+            refreshId = setTimeout(processLightingRefresh, delay);
+        }
+        else processLightingRefresh();
     }
   }
 });

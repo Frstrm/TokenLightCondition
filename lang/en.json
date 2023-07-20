@@ -12,7 +12,7 @@
   "tokenlightcond-config-globalIllumination-name": "Global Illumination",
   "tokenlightcond-config-globalIllumination-hint": "Enable use of Global Illumination settings in determining token light conditions.",
   "tokenlightcond-config-delaycalculations-name": "Delay Calculations",
-  "tokenlightcond-config-delaycalculations-hint": "Delays the token update by the configured miliseconds.",
+  "tokenlightcond-config-delaycalculations-hint": "Delays the light condition calculation by the configured miliseconds.",
   "tokenlightcond-config-negativelights-name": "Negative Lights Support",
   "tokenlightcond-config-negativelights-hint": "Negative luminance will provide dim or dark conditions instead of removing them.",
   "tokenlightcond-effect-dark": "Dark",
