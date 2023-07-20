@@ -116,4 +116,29 @@ Hooks.once('ready', () => {
     }
   });
 
+  game.settings.register('tokenlightcondition', 'delaycalculations', {
+    name: game.i18n.localize("tokenlightcond-config-delaycalculations-name"),
+    hint: game.i18n.localize("tokenlightcond-config-delaycalculations-hint"),
+    scope: 'world',
+    config: true,
+    default: 0,
+    type: Number,
+    range: {
+      min: 0,
+      max: 3000,
+      step: 1
+    },
+    onChange: value => {}
+  });
+
+  game.settings.register('tokenlightcondition', 'negativelights', {
+    name: game.i18n.localize("tokenlightcond-config-negativelights-name"),
+    hint: game.i18n.localize("tokenlightcond-config-negativelights-hint"),
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+    onChange: value => {}
+  });
+
 });
