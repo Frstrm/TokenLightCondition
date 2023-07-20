@@ -187,14 +187,17 @@ export class Lighting {
       }
     }
 
-    if (lightLevel < 2) {
+    const negativeLights = game.settings.get('tokenlightcondition', 'negativelights');
+    if (lightLevel < 2 || negativeLights) {
       // placed lights
       if (canvas.lighting.objects) {
-        for (const placed_light of canvas.lighting.objects.children) {
+        const sortedLights = canvas.lighting.objects.children.sort((a,b) => b.document.config.luminosity - a.document.config.luminosity);
+        for (const placed_light of sortedLights) {
           if (placed_light.source.active == true) {
             let tokenDistance = this.get_calculated_light_distance(selected_token, placed_light);
             let lightDimDis = placed_light.document.config.dim;
             let lightBrtDis = placed_light.document.config.bright;
+            const negativeLight = negativeLights && placed_light.document.config.luminosity < 0;
 
             if (tokenDistance <= lightDimDis || tokenDistance <= lightBrtDis) {
               // If light has a reduced angle and possibly rotated...
@@ -223,14 +226,20 @@ export class Lighting {
 
                 if (!foundWall) {
                   // check for dim
-                  if (tokenDistance <= lightDimDis) {
-                    if ((lightLevel < 1) && (lightDimDis > 0)) {
+                  if (tokenDistance <= lightDimDis && (lightDimDis > 0)) {
+                    if (negativeLight && lightLevel > 1) {
+                      lightLevel = 1;
+                    }
+                    else if ((lightLevel < 1) && !negativeLight) {
                       lightLevel = 1;
                     }
                   }
                   // check for bright
-                  if (tokenDistance <= lightBrtDis) {
-                    if ((lightLevel < 2) && (lightBrtDis > 0)) {
+                  if (tokenDistance <= lightBrtDis && (lightBrtDis > 0)) {
+                    if (negativeLight && lightLevel > 0) {
+                      lightLevel = 0;
+                    }
+                    else if ((lightLevel < 2) && !negativeLight) {
                       lightLevel = 2;
                     }
                   }
@@ -242,15 +251,17 @@ export class Lighting {
       }
     }
 
-    if (lightLevel < 2) {
+    if (lightLevel < 2 || negativeLights) {
       // placed tokens
       if (canvas.tokens.placeables) {
-        for (const placed_token of canvas.tokens.placeables) {
+        const sortedTokens = canvas.tokens.placeables.sort((a,b) => b.document.light.luminosity - a.document.light.luminosity);
+        for (const placed_token of sortedTokens) {
           if (placed_token.actor) {
             if (placed_token.light.active == true) {
               let tokenDistance = Core.get_calculated_distance(selected_token, placed_token);
               let tokenDimDis = placed_token.document.light.dim;
               let tokenBrtDis = placed_token.document.light.bright;
+              const negativeLight = negativeLights && placed_token.document.light.luminosity < 0;
               
               if (tokenDistance <= tokenDimDis || tokenDistance <= tokenBrtDis) {
                 let inLight = true;
@@ -280,14 +291,20 @@ export class Lighting {
                   let foundWall = Core.get_wall_collision(selected_token, placed_token);
                   if (!foundWall) {
                     // check for within dim
-                    if (tokenDistance <= tokenDimDis) {
-                      if ((lightLevel < 1) && (tokenDimDis > 0)) {
+                    if (tokenDistance <= tokenDimDis && (tokenDimDis > 0)) {
+                      if (negativeLight && lightLevel > 1) {
+                        lightLevel = 1;
+                      }
+                      else if ((lightLevel < 1) && !negativeLight) {
                         lightLevel = 1;
                       }
                     }
                     // check for within bright
-                    if (tokenDistance <= tokenBrtDis) {
-                      if ((lightLevel < 2) && (tokenBrtDis > 0)) {
+                    if (tokenDistance <= tokenBrtDis && (tokenBrtDis > 0)) {
+                      if (negativeLight && lightLevel > 0) {
+                        lightLevel = 0;
+                      }
+                      else if ((lightLevel < 2) && !negativeLight) {
                         lightLevel = 2;
                       }
                     }
