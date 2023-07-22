@@ -37,6 +37,8 @@ This is to allow players, or modules to use these effects to help rules determin
 - TokenHud light box indicator is only shown if token hp > 0
 - Lighting Control that can enable/disable Token Light Condition use.
 - Option to factor in Scene Global Illumination.
+- Option to delay calculations to increase perf or to delay until after token movement
+- Option to support lights with Negative luminance
 
 # Lighting Controls
 
@@ -100,6 +102,13 @@ Convienent Effects entries are added on module load if they don't exist.
 
 ### **Global Illumination**
 Use Scene Global Illumination settings in determination of token light conditions.
+
+### **Delay Calculations**
+Delays the light condition calculation by the configured miliseconds.
+Value of 0, disables the delay feature.
+
+### **Negative Lights Support**
+Negative luminance will provide dim or dark conditions instead of removing them.
 
 ## Suggested Modules
 * [Stealthy](https://foundryvtt.com/packages/stealthy)

@@ -1,3 +1,8 @@
+### Version 0.6.4
+* Options added
+* * allows for lights setup with -luminance
+* * Calculation Delay
+
 ### Version 0.6.3
 * Restored effects option to config for pf2e system
 * * pf2e is not dependent on ATL to add effects to token
