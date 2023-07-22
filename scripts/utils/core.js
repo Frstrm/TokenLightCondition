@@ -134,8 +134,7 @@ export class Core {
   }
 
     // Check if Token is within defined range of another token i.e. Is friendly token within range of hostile token
-  static get_calculated_distance(selected_token, placed_token) {
-    let elevated_distance = 0;
+  static get_calculated_distance(selected_token, light_source) {
     let gridSize = canvas.grid.size;
     let gridDistance = canvas.scene.grid.distance;
     
@@ -143,19 +142,17 @@ export class Core {
     const y1 = selected_token.center.y;
     const z1 = (selected_token.document.elevation / gridDistance) * gridSize;
 
-    const x2 = placed_token.center.x;
-    const y2 = placed_token.center.y;
-    const z2 = (placed_token.document.elevation / gridDistance) * gridSize;
+    const x2 = light_source.x;
+    const y2 = light_source.y;
+    const z2 = (light_source.elevation / gridDistance) * gridSize;
 
     // Measure grid distance with elevation
     let e1 = Math.abs(x1 - x2);
     let e2 = Math.abs(y1 - y2);
     let e3 = Math.abs(z1 - z2);
-    let distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
+    const distance = Math.sqrt(e1*e1 + e2*e2 + e3*e3);
 
-    elevated_distance = (distance / gridSize) * gridDistance;;
-
-    return elevated_distance;
+    return distance;
   }
 
   static get_wall_collision(selected_token, targetObject) {
