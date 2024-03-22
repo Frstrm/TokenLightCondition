@@ -107,7 +107,7 @@ export class Effects {
         source: {
           value: '',
         },
-        slug: `tokenlightcondition-effect`,
+        slug: `tokenlightcondition-dim`,
       },
       flags: {}
     }
@@ -143,7 +143,7 @@ export class Effects {
         source: {
           value: '',
         },
-        slug: `tokenlightcondition-effect`,
+        slug: `tokenlightcondition-dark`,
       },
       flags: {}
     }
