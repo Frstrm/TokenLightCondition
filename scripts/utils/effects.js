@@ -95,6 +95,12 @@ export class Effects {
         description: {
           value: game.i18n.localize('tokenlightcond-effect-dim-desc'),
         },
+        "rules": [
+          {
+            "key": "RollOption",
+            "option": "lighting:dim-light"
+          }
+        ],
         unidentified: true,
         traits: {
           custom: '',
@@ -131,6 +137,12 @@ export class Effects {
         description: {
           value: game.i18n.localize('tokenlightcond-effect-dark-desc'),
         },
+        "rules": [
+          {
+            "key": "RollOption",
+            "option": "lighting:darkness"
+          }
+        ],
         unidentified: true,
         traits: {
           custom: '',
