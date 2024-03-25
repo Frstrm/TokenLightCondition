@@ -1,3 +1,8 @@
+### Version 0.6.5
+* pf2e
+* * slugs updated for dim/darkness
+* * rules options added for dim/darkness
+
 ### Version 0.6.4
 * Options added
 * * allows for lights setup with -luminance
