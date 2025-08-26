@@ -1,9 +1,8 @@
-[![License](https://img.shields.io/github/license/Frstrm/TokenLightCondition?label=License)](LICENSE)
-[![Latest Version](https://img.shields.io/github/v/release/frstrm/tokenlightcondition?display_name=tag&sort=semver&label=Latest%20Version)](https://github.com/frstrm/tokenlightcondition/releases/latest)
-![Foundry Version](https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffrstrm%2Ftokenlightcondition%2Fmain%2Fmodule.json)
+# IMPORTANT: MODULE HAS MOVED
 
-![Latest Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/latest/total?color=blue&label=latest%20downloads)
-![Total Downloads](https://img.shields.io/github/downloads/Frstrm/TokenLightCondition/total?color=blue&label=total%20downloads)
+## This Repository is No Longer Maintained
+
+###  **NEW LOCATION**: https://github.com/Sayshal/tokenlightcondition/
 
 # Token Light Condition
 
